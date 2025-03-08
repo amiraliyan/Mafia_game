@@ -244,11 +244,11 @@
             });
 
             document.querySelectorAll("#independent-roles .role-item input[type='checkbox']:checked").forEach(checkbox => {
-                summary = summary + "1" + " : " + checkbox.parentElement.textContent.trim()+"\n\n";
+                summary = summary + "1" + " : " + checkbox.parentElement.textContent.trim()+"\n";
             });   
 
 
-            if (!confirm(summary+"آیا مایل به ادامه هستید؟")) {
+            if (!confirm(summary+"\n"+"آیا مایل به ادامه هستید؟")) {
                 return;
             }
 
