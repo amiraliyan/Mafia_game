@@ -84,6 +84,8 @@
     </div>
     
 
+
+
     <div id="stage2" class="hidden">
         <div class="container" style="width: fit-content; margin: auto; text-align: center;">
             <h2>اختصاص نقش</h2>
@@ -97,10 +99,11 @@
     
     <script>
         const roles = {
-            citizen: ["شهروند ساده", "شهروند خاص", "دکتر", "کاراگاه", "حرفه­ ای", "رویین تن", "نگهبان", "تفنگدار", "تکاور", "بازپرس", "هانتر", "راهنما", "مین گذار", "وکیل", "عطار", "اوشن", "مطنون", "زره ساز", "وارث", "کدخدا", "خبرنگار", "شهردار", "کنستانتین", "رمال", "روانشناس"],
-            mafia: ["رییس مافیا", "ناتو", "گروگان گیر", "مذاکره کننده", "مافیا ساده", "بمبگذار", "جادوگر", "جلاد", "خبرچین", "شیاد", "یاغی", "هکر"],
-            independent: ["زودیاک", "جک"]
+            citizen: ["شهروند ساده", "شهروند خاص", "دکتر", "کاراگاه", "حرفه­ ای", "رویین تن", "نگهبان", "تفنگدار", "تکاور", "بازپرس", "هانتر", "راهنما", "مین گذار", "وکیل", "عطار", "اوشن", "مظنون", "زره ساز", "وارث", "کدخدا", "خبرنگار", "شهردار", "کنستانتین", "رمال", "قاضی","سربدار","کاتب","ریش سفید","شب گرد","کشیک","شمشیرساز", "روانشناس"],
+            mafia: [ "مافیا ساده", "رییس مافیا", "ناتو", "گروگان گیر", "مذاکره کننده", "بمبگذار", "جادوگر", "جلاد", "خبرچین", "شیاد", "یاغی","هکر","مزدور", "چریک"],
+            independent: ["زودیاک","جک","نوستراداموس", "شرلوک"]
         };
+        const persian_categories = {citizen: "ساید شهروند", mafia: "ساید مافیا", independent: "ساید مستقل"}
         
         function populateRoles() {
             for (const category in roles) {
@@ -109,7 +112,7 @@
                 roles[category].forEach(role => {
                     const div = document.createElement("div");
                     div.classList.add("role-item");
-                    if (role === "شهروند ساده" || role === "شهروند خاص") {
+                    if (role === "شهروند ساده" || role === "شهروند خاص" || role === "مافیا ساده") {
                         div.innerHTML = `${role} <select onchange="updateCounts()">${[...Array(11).keys()].map(i => `<option value="${i}">${i}</option>`).join('')}</select>`;
                     } else {
                         div.innerHTML = `${role} <input type='checkbox' onchange="updateCounts()">`;
@@ -127,6 +130,9 @@
             });
             document.querySelectorAll("#citizen-roles .role-item input[type='checkbox']").forEach(checkbox => {
                 if (checkbox.checked) citizenCount += 1;
+            });
+            document.querySelectorAll("#mafia-roles .role-item select").forEach(select => {
+                mafiaCount += parseInt(select.value);
             });
             
             document.querySelectorAll("#mafia-roles .role-item input[type='checkbox']").forEach(checkbox => {
@@ -148,8 +154,36 @@
             document.querySelectorAll("input[type='checkbox']").forEach(checkbox => checkbox.checked = false);
             updateCounts();
         }
+
+        function shuffle(array) {
+          let currentIndex = array.length;
+
+          // While there remain elements to shuffle...
+          while (currentIndex != 0) {
+
+            // Pick a remaining element...
+            let randomIndex = Math.floor(Math.random() * currentIndex);
+            currentIndex--;
+
+            // And swap it with the current element.
+            [array[currentIndex], array[randomIndex]] = [
+              array[randomIndex], array[currentIndex]];
+          }
+        }
         
+        function findKeyByValue(jsonObject, targetValue) {
+          const keys = Object.keys(jsonObject);
+          for (let key of keys) {
+            if (jsonObject[key].includes(targetValue)) {
+              return key;
+            }
+          }
+          return null; // Key not found
+        }
+
+
         let rolePool = [];
+
         function assignRoles() {
             updateCounts();
             rolePool = [];
@@ -157,13 +191,69 @@
                 let count = parseInt(select.value);
                 for (let i = 0; i < count; i++) rolePool.push(select.parentElement.childNodes[0].textContent.trim());
             });
-            document.querySelectorAll("#mafia-roles .role-item input[type='checkbox']:checked, #independent-roles .role-item input[type='checkbox']:checked").forEach(checkbox => {
+            document.querySelectorAll(" #citizen-roles .role-item input[type='checkbox']:checked").forEach(checkbox => {
                 rolePool.push(checkbox.parentElement.textContent.trim());
             });
+
+
+            document.querySelectorAll("#mafia-roles .role-item select").forEach(select => {
+                let count = parseInt(select.value);
+                for (let i = 0; i < count; i++) rolePool.push(select.parentElement.childNodes[0].textContent.trim());
+            });
+
+            document.querySelectorAll("#mafia-roles .role-item input[type='checkbox']:checked").forEach(checkbox => {
+                rolePool.push(checkbox.parentElement.textContent.trim());
+            });
+
+            document.querySelectorAll("#independent-roles .role-item input[type='checkbox']:checked").forEach(checkbox => {
+                rolePool.push(checkbox.parentElement.textContent.trim());
+            });
+            
+
+
             if (rolePool.length === 0) {
                 alert("لطفاً حداقل یک نقش انتخاب کنید");
                 return;
             }
+           
+
+
+
+            let summary = "نقش های انتخاب شده:" + "\n\n"
+
+            document.querySelectorAll("#citizen-roles .role-item select").forEach(select => {
+                let count = parseInt(select.value);
+                if (count > 0){
+                    summary = summary + select.value + " : " + select.parentElement.childNodes[0].textContent.trim() + "\n";
+                }
+            });
+
+            document.querySelectorAll("#citizen-roles .role-item input[type='checkbox']:checked").forEach(checkbox => {
+                summary = summary + "1" + " : " + checkbox.parentElement.textContent.trim()+"\n";
+            });
+
+            document.querySelectorAll("#mafia-roles .role-item select").forEach(select => {
+                let count = parseInt(select.value);
+                if (count > 0){
+                    summary = summary + select.value + " : " + select.parentElement.childNodes[0].textContent.trim()+"\n";
+                }
+            });
+
+            document.querySelectorAll("#mafia-roles .role-item input[type='checkbox']:checked").forEach(checkbox => {
+                summary = summary + "1" + " : " + checkbox.parentElement.textContent.trim()+"\n";
+            });
+
+            document.querySelectorAll("#independent-roles .role-item input[type='checkbox']:checked").forEach(checkbox => {
+                summary = summary + "1" + " : " + checkbox.parentElement.textContent.trim()+"\n";
+            });   
+
+
+            if (!confirm(summary+"آیا مایل به ادامه هستید؟")) {
+                return;
+            }
+
+
+            shuffle(rolePool);
             document.getElementById("stage1").classList.add("hidden");
             document.getElementById("stage2").classList.remove("hidden");
         }
@@ -190,7 +280,7 @@
             }
             const randomIndex = Math.floor(Math.random() * rolePool.length);
             const role = rolePool.splice(randomIndex, 1)[0];
-            document.getElementById("assigned-role").innerText = role;
+            document.getElementById("assigned-role").innerText = role + "\n\n" + persian_categories[findKeyByValue(roles, role)];
             document.getElementById("assign-role-btn").innerText = "متوجه شدم!";
             document.getElementById("assign-role-btn").onclick = clearRole;
         }
