@@ -21,6 +21,44 @@
             border-radius: 10px;
             box-shadow: 0px 0px 10px red;
         }
+        .timer {
+            font-size: 24px;
+            margin-bottom: 20px;
+            color: red;
+        }
+        .input-group {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+        }
+        .input-group input {
+            width: 50px;
+            text-align: center;
+            background-color: #333;
+            color: white;
+            border: 1px solid red;
+        }
+        .input-group button {
+            padding: 5px 10px;
+            cursor: pointer;
+            background-color: red;
+            color: white;
+            border: none;
+            font-weight: bold;
+        }
+        .button-group {
+            margin-top: 10px;
+        }
+        .stop-button {
+            padding: 10px;
+            background-color: darkred;
+            color: white;
+            border: none;
+            cursor: pointer;
+            margin: 5px;
+            box-shadow: 0 0 5px red;
+            Font-weight: bold;
+        }
         .role-item {
             display: flex;
             justify-content: space-between;
@@ -43,6 +81,23 @@
             border-radius: 5px;
             transition: 0.3s;
         }
+       .content {
+            padding: 20px;
+            height: 90vh;
+        }
+       .audio-player {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            background: #333;
+            padding: 10px 0;
+            text-align: center;
+        }
+        .audio-player audio {
+            width: 80%;
+        }
+
         button:hover {
             background: darkred;
         }
@@ -52,6 +107,12 @@
     </style>
 </head>
 <body>
+   <div class="audio-player">
+        <audio controls>
+            <source src="Armagan Oruc - Arvb.mp3" type="audio/mpeg">
+            Your browser does not support the audio element.
+        </audio>
+    </div>
     <div id="stage1">
         <h1>تیم مافیا گنگ دالاس</h1>
         <h2>انتخاب نقش‌ها</h2>
@@ -79,8 +140,9 @@
             </div>
         </div>
         
-        <button style="margin-top: 15px;"  onclick="assignRoles()">اختصاص نقش</button>
+        <button style="margin-top: 15px; margin-bottom: 100px;"  onclick="assignRoles()">اختصاص نقش</button>
         <button style="margin-top: 15px;"  onclick="resetRoles()">بازنشانی</button>
+        <button style="margin-top: 15px;"  onclick="godPage()">صفحه گرداننده</button>
     </div>
     
 
@@ -93,10 +155,82 @@
             <p id="assigned-role" style="font-weight: bold; font-size: 34px;"></p>
 
         </div>
-        <button style="position: absolute; bottom: 20px; width: 30%; text-align: center; display: flex; align-items: center; justify-content: center; " onclick="goBack()">بازگشت</button>
+        <button style="position: absolute; bottom: 100px; width: 30%; text-align: center; display: flex; align-items: center; justify-content: center; " onclick="goBack()">بازگشت</button>
         
     </div>
     
+    <div id="GodPage" class="hidden">
+       <div class="container">
+            <div class="timer" id="timer">00:00</div>
+            
+            <!-- Expanded to 10 Timers -->
+            <div class="input-group">
+                <input type="number" id="time1" value="30">
+                <button onclick="startTimer('time1')">تایمر معارفه</button>
+            </div>
+            <div class="input-group">
+                <input type="number" id="time2" value="30">
+                <button onclick="startTimer('time2')">تایمر چالش</button>
+            </div>
+            <div class="input-group">
+                <input type="number" id="time3" value="45">
+                <button onclick="startTimer('time3')">تایمر نوبت صحبت</button>
+            </div>
+            <div class="input-group">
+                <input type="number" id="time4" value="40">
+                <button onclick="startTimer('time4')">تایمر درباره</button>
+            </div>
+            <div class="input-group">
+                <input type="number" id="time5" value="40">
+                <button onclick="startTimer('time5')">تایمر کاور</button>
+            </div>
+            <div class="input-group">
+                <input type="number" id="time6" value="40">
+                <button onclick="startTimer('time6')">تایمر تارگت</button>
+            </div>
+            <div class="input-group">
+                <input type="number" id="time7" value="60">
+                <button onclick="startTimer('time7')">تایمر دفاع</button>
+            </div>
+            <div class="input-group">
+                <input type="number" id="time8" value="40">
+                <button onclick="startTimer('time8')">تایمر وصیت</button>
+            </div>
+            <div class="input-group">
+                <input type="number" id="time9" value="120">
+                <button onclick="startTimer('time9')">تایمر کیاس</button>
+            </div>
+            <div class="input-group">
+                <input type="number" id="time9" value="60">
+                <button onclick="startTimer('time9')">تایمر کیاس دوم</button>
+            </div>
+            
+            <div class="button-group">
+                <button class="stop-button" onclick="stopAlarm()">استاپ</button>
+                <button class="stop-button" onclick="restartTimer()">ریست</button>
+            </div>
+            
+        </div>
+        <button style="
+            padding: 10px; 
+            background-color: darkred; 
+            color: white; 
+            border: none; 
+            cursor: pointer; 
+            margin: 5px; 
+            box-shadow: 0 0 5px red;
+            font-weight: bold;" 
+            onclick="GoBackHome()">بازگشت</button>
+
+
+        
+
+
+        <audio id="alarmSound" src="Alarm.wav" loop></audio>
+    </div>
+
+
+
     <script>
         const roles = {
             citizen: ["شهروند ساده", "شهروند خاص", "دکتر", "کاراگاه", "حرفه­ ای", "رویین تن", "نگهبان", "تفنگدار", "تکاور", "بازپرس", "هانتر", "راهنما", "مین گذار", "وکیل", "عطار", "اوشن", "مظنون", "زره ساز", "وارث", "کدخدا", "خبرنگار", "شهردار", "کنستانتین", "رمال", "قاضی","سربدار","کاتب","ریش سفید","شب گرد","کشیک","شمشیرساز", "روانشناس"],
@@ -108,6 +242,75 @@
 1: "یک",2: "دو",3: "سه",4: "چهار",5: "پنج",6: "شش",7: "هفت",8: "هشت",9: "نه",10: "ده",11: "یازده",12: "دوازده",13: "سیزده",14: "چهارده",15: "پانزده",16: "شانزده",17: "هفده",18: "هجده",19: "نوزده",20: "بیست",21: "بیست و یک",22: "بیست و دو",23: "بیست و سه",24: "بیست و چهار",25: "بیست و پنج",26: "بیست و شش",27: "بیست و هفت",28: "بیست و هشت",29: "بیست و نه",30: "سی",31: "سی و یک",32: "سی و دو",33: "سی و سه",34: "سی و چهار",35: "سی و پنج",36: "سی و شش",37: "سی و هفت",38: "سی و هشت",39: "سی و نه",40: "چهل",41: "چهل و یک",42: "چهل و دو",43: "چهل و سه",44: "چهل و چهار",45: "چهل و پنج",46: "چهل و شش",47: "چهل و هفت",48: "چهل و هشت",49: "چهل و نه",50: "پنجاه",51: "پنجاه و یک",52: "پنجاه و دو",53: "پنجاه و سه",54: "پنجاه و چهار",55: "پنجاه و پنج",56: "پنجاه و شش",57: "پنجاه و هفت",58: "پنجاه و هشت",59: "پنجاه و نه",60: "شصت",61: "شصت و یک",62: "شصت و دو",63: "شصت و سه",64: "شصت و چهار",65: "شصت و پنج",66: "شصت و شش",67: "شصت و هفت",68: "شصت و هشت",69: "شصت و نه",70: "هفتاد",71: "هفتاد و یک",72: "هفتاد و دو",73: "هفتاد و سه",74: "هفتاد و چهار",75: "هفتاد و پنج",76: "هفتاد و شش",77: "هفتاد و هفت",78: "هفتاد و هشت",79: "هفتاد و نه",80: "هشتاد",81: "هشتاد و یک",82: "هشتاد و دو",83: "هشتاد و سه",84: "هشتاد و چهار",85: "هشتاد و پنج",86: "هشتاد و شش",87: "هشتاد و هفت",88: "هشتاد و هشت",89: "هشتاد و نه",90: "نود",91: "نود و یک",92: "نود و دو",93: "نود و سه",94: "نود و چهار",95: "نود و پنج",96: "نود و شش",97: "نود و هفت",98: "نود و هشت",99: "نود و نه",100: "صد",
 
 }
+        let countdown;
+        let lastTime = 40;
+
+        function startTimer(inputId) {
+            clearInterval(countdown);
+            let time = document.getElementById(inputId).value;
+            lastTime = parseInt(time);
+            let timerDisplay = document.getElementById("timer");
+            let secondsRemaining = lastTime;
+            
+            function updateTimer() {
+                if (secondsRemaining >= 0) {
+                    let minutes = Math.floor(secondsRemaining / 60);
+                    let seconds = secondsRemaining % 60;
+                    timerDisplay.textContent = `${minutes}:${seconds.toString().padStart(2, '0')}`;
+                    secondsRemaining--;
+                } else {
+                    clearInterval(countdown);
+                    document.getElementById("alarmSound").play();
+                }
+            }
+            
+            updateTimer();
+            countdown = setInterval(updateTimer, 1000);
+        }
+
+        function stopAlarm() {
+            let alarm = document.getElementById("alarmSound");
+            alarm.pause();
+            alarm.currentTime = 0;
+            clearInterval(countdown);
+            document.getElementById("timer").textContent = "00:00";
+        }
+
+        function stopTimer() {
+            clearInterval(countdown);
+            document.getElementById("timer").textContent = "00:00";
+        }
+
+        function restartTimer() {
+            clearInterval(countdown);
+            let timerDisplay = document.getElementById("timer");
+            let secondsRemaining = lastTime;
+            
+            function updateTimer() {
+                if (secondsRemaining >= 0) {
+                    let minutes = Math.floor(secondsRemaining / 60);
+                    let seconds = secondsRemaining % 60;
+                    timerDisplay.textContent = `${minutes}:${seconds.toString().padStart(2, '0')}`;
+                    secondsRemaining--;
+                } else {
+                    clearInterval(countdown);
+                    document.getElementById("alarmSound").play();
+                }
+            }
+            
+            updateTimer();
+            countdown = setInterval(updateTimer, 1000);
+        }
+        function godPage(){
+            document.getElementById("stage1").classList.add("hidden");
+            document.getElementById("GodPage").classList.remove("hidden");
+        }
+        function GoBackHome(){
+            document.getElementById("GodPage").classList.add("hidden");
+            document.getElementById("stage1").classList.remove("hidden");
+        }
+
+
         function populateRoles() {
             for (const category in roles) {
                 const container = document.getElementById(`${category}-roles`);
