@@ -374,9 +374,9 @@
         <table id="playerTable" hidden="True">
             <thead>
                 <tr>
-                    <th>وضعیت</th>
                     <th>نقش</th>
                     <th>نام</th>
+                    <th>وضعیت</th>
                 </tr>
             </thead>
             <tbody></tbody>
@@ -2409,8 +2409,8 @@ function fixText(text) {
         // Swap "نام" (Name) and "وضعیت" (Status) (First and Last Columns)
         let rowHTML = `
             <tr style="color: ${textColor}; background-color: ${backgroundColor};">
-                <td>${name}</td>  <!-- Name (First Column, swapped) -->
                 <td>${role}</td>  <!-- Role (Middle Column, unchanged) -->
+                <td>${name}</td>  <!-- Name (First Column, swapped) -->
                 <td class="${isAlive ? "alive" : "dead"}">${isAlive ? "✅" : "❌"}</td>  <!-- Status (Last Column, swapped) -->
             </tr>
         `;
