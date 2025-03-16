@@ -502,6 +502,7 @@
                 mafia_jadoo_player,
                 mafia_shot_player,
                 night_casualty,
+                role_side,
 
                 // Buttons
                 cur_next_btm: {
@@ -570,6 +571,7 @@
             let gameData = JSON.parse(savedData);
 
             // Restore game variables
+            role_side = gameData.role_side;
             sample = gameData.sample;
             game_info = gameData.game_info;
             cur_duty = gameData.cur_duty;
@@ -1491,6 +1493,7 @@
             cur_key_ind = 0;
             [live_citizen_count, live_mafia_count] = getInquiryLive();
             
+            
             if (live_citizen_count<=live_mafia_count){
                 cur_duty['mgb_mafia_win'] = ["تیم مافیا برنده شده"];
                 game_info['game_live'] = 0;
@@ -1665,7 +1668,6 @@
             let liveCitizenCount = Object.entries(sample)
                 .filter(([key, value]) => value[1] === 1 && role_side[value[0]] === "citizen")
                 .length;
-
             return [liveCitizenCount, liveMafiaCount];
         }
 
