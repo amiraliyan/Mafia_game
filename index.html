@@ -369,6 +369,7 @@
             <button class="stop-button" id="cur_confirm_btm" onclick="cur_confirm()" hidden="True">تایید</button>
             <button class="stop-button" id="gameInfoBtm" onclick="showData()">اطلاعات بازی</button>
             <button class="stop-button"  onclick="restoreGame_2()">بازنشانی آخرین وضعیت</button>
+            <!-- <button class="stop-button"  onclick="someinfo_()">some info</button> -->
             <!-- <button style="
             padding: 10px; 
             background-color: darkred; 
@@ -381,7 +382,7 @@
             onclick="goBack()" hidden="True">بازگشت</button> -->
 
         </div>
-
+        <!-- <div id="someinfo"></div> -->
 
         <table id="playerTable" hidden="True">
             <thead>
@@ -466,6 +467,9 @@
         let keys = []
         let last_duty = ""
         let vares_new_role = "";
+        let attar_job_done = false;
+
+
         keys = Object.keys(cur_duty);
 
         let kapoScenario = {
@@ -486,7 +490,9 @@
         let mafia_shot_player = '';
         let night_casualty = '';
 
-
+        function someinfo_(){
+            document.getElementById('someinfo').textContent = JSON.stringify(cur_duty) + "  " + keys + "   " + cur_msg_ind    +  "  " +cur_key_ind
+        }
 
         function backupGame() {
             let gameData = {
@@ -554,7 +560,6 @@
                 confirmed = confirm("دوباره میپرسم، مطمئنی؟");
                 if (confirmed) {
                     restoreGame();
-                    alert("انجام شد."); // Replace this with the actual action
                 } 
                 
             } 
@@ -758,7 +763,11 @@
 
 
         function getRolePlayerName(role) {
-            return Object.keys(sample).find(key => sample[key][0] === role)[0];
+            let temp_names = Object.keys(sample).filter(key => sample[key][0] === role)
+            if (temp_names.length==0){
+                return null;
+            }
+            return temp_names[0];
         }
 
 
@@ -767,6 +776,9 @@
         }
 
         function isVaresImmortal() {
+            if (getRolePlayerName("وارث")== null && sample[getRolePlayerName("وارث")][1]==0){
+                return false;
+            }
             if (role_side[getPlayerRole(game_info["Vares_selection"])] === "mafia") {
                 return false;
             } else if (sample[game_info["Vares_selection"]][1] === 1) {
@@ -943,11 +955,12 @@
                 if (poisonFatal) {
                     sample[poisoned_player][1] = 0; // Mark player as dead
                     update_cur_msg(`${poisoned_player}  سم اثر کرد. لطفا از بازی خارج بشید.`);
+                    
                     ReassignVares(poisoned_player);
                 } else {
                     update_cur_msg("سم اثر نکرد");
                 }
-                
+                hide_unhide_element(0, 'drop1');
                 unhide_next();
                 hide_ok();
             }
@@ -966,6 +979,7 @@
                     if (["مظنون", "شهروند ساده"].includes(sample[mafia_shot_player][0])){
                         sample[mafia_shot_player][0] = 'مافیا ساده';
                         night_casualty = document.getElementById("nameDropdown_duty3").value;
+                        sample[night_casualty][1] = 0;
                     }
                     else {
                         night_casualty = ''
@@ -981,8 +995,6 @@
                         night_casualty=''
                     }
                 }
-
-
 
                 document.getElementById("nameDropdown_duty").setAttribute("hidden", "");
                 document.getElementById("nameDropdown_duty2").setAttribute("hidden", "");
@@ -1000,6 +1012,7 @@
             if (last_duty == 'jadoo') {
                 mafia_jadoo_player = document.getElementById("nameDropdown_duty").value;
                 update_cur_msg("بسیار خوب");
+                document.getElementsByClassName('cur_next_btm').onclick = nextMessage;
                 hide_unhide_element(0, 'drop1');
                 unhide_next();
                 hide_ok();
@@ -1016,39 +1029,56 @@
 
 
             if (last_duty == 'doctor_save') {
-                update_cur_msg("بسیار خوب.");
 
-                let Doctor_save = document.getElementById("nameDropdown_duty").value;
-                if (sample[Doctor_save][0]=='دکتر'){
-                    game_info.Doctor_self_save = 1;
+                if (sample[getRolePlayerName("دکتر")][1]==1){
+
+                    let Doctor_save = document.getElementById("nameDropdown_duty").value;
+                    if (sample[Doctor_save][0]=='دکتر'){
+                        game_info.Doctor_self_save = 1;
+                    }
+                    if (mafia_jadoo_player !=="" && sample[mafia_jadoo_player][0] == 'دکتر'){
+                        Doctor_save = mafia_jadoo_player;}
+                    
+                    if ((sample[mafia_shot_player][0]=="وارث" && isVaresImmortal()) || mafia_shot_player==Doctor_save){
+                        night_casualty=''
+                    }
+                    else{
+                        sample[mafia_shot_player][1]=0;
+                        night_casualty = mafia_shot_player;
+                        ReassignVares(mafia_shot_player);
+                    }
+                }else {
+                    if (sample[mafia_shot_player][0]=="وارث" && isVaresImmortal()){
+                        night_casualty=''
+                    }
+                    else{
+                        sample[mafia_shot_player][1]=0;
+                        night_casualty = mafia_shot_player;
+                        ReassignVares(mafia_shot_player)
+                    }
                 }
-                if (sample[mafia_jadoo_player][0] == 'دکتر'){
-                    Doctor_save = mafia_jadoo_player;}
-                
-                if (!((sample[mafia_shot_player][0]=="وارث" && isVaresImmortal()) || mafia_shot_player==Doctor_save)){
-                    sample[mafia_shot_player][1]=0;
-                    night_casualty = mafia_shot_player;
-                    ReassignVares(mafia_shot_player)
-                }
-                else{
-                    night_casualty=''
-                }
+                update_cur_msg("بسیار خوب.");
+                document.getElementsByClassName('cur_next_btm').onclick = nextMessage;
                 unhide_next();
                 hide_ok();
                 hide_unhide_element(0, 'drop1')
             }
 
             if (last_duty == 'karagah_inq') {
+                if (sample[getRolePlayerName("کاراگاه")][1]==1){
 
-                let Karagah_inq = document.getElementById("nameDropdown_duty").value;
-                if (sample[mafia_jadoo_player][0] == 'کاراگاه'){
-                    Karagah_inq = mafia_jadoo_player;}
-                
-                if (["جادوگر", "جلاد", "مظنون", "مافیا ساده"].includes(sample[Karagah_inq][0])){
-                    update_cur_msg("لایک");
-                }
-                else {
-                    update_cur_msg("دیسلایک");
+                    let Karagah_inq = document.getElementById("nameDropdown_duty").value;
+                    if (mafia_jadoo_player !=="" && sample[mafia_jadoo_player][0] == 'کاراگاه'){
+                        Karagah_inq = mafia_jadoo_player;}
+                    
+                    if (["جادوگر", "جلاد", "مظنون", "مافیا ساده"].includes(sample[Karagah_inq][0])){
+                        update_cur_msg("لایک");
+                    }
+                    else {
+                        update_cur_msg("دیسلایک");
+                    }
+                } else{
+                    update_cur_msg("")
                 }
                 unhide_next();
                 hide_ok();
@@ -1062,11 +1092,11 @@
                     let poisanables = Object.keys(sample).filter(player => sample[player][0]!=="عطار" && (sample[player][1]==1  || player == night_casualty));
                     populateDropdown_duty_custom(poisanables, "nameDropdown_duty");
                     update_cur_msg("سم وارد بدن کی بشه؟")
-                    cur_msg_ind++;
-                    if (cur_msg_ind==cur_duty[cur_key].length){
-                        cur_msg_ind = 0;
-                        cur_key_ind ++;
-                    }
+                    // cur_msg_ind++;
+                    // if (cur_msg_ind==cur_duty[cur_key].length){
+                    //     cur_msg_ind = 0;
+                    //     cur_key_ind ++;
+                    // }
                 }
                 else {
                     update_cur_msg("بسیار خوب، بخوابه");
@@ -1078,7 +1108,7 @@
 
 
             if (last_duty == 'Attar_5_2') {
-                if (sample[mafia_jadoo_player][0]=="عطار"){
+                if (mafia_jadoo_player !=="" && sample[mafia_jadoo_player][0]=="عطار"){
                     game_info.Attar_poison = getRolePlayerName("عطار");
 
                 }else {
@@ -1164,7 +1194,7 @@
                 return null
             }
             let cur_key = keys[cur_key_ind];  
-            
+
             
             
             if (cur_key=='mgb_intro_night_end'){
@@ -1189,6 +1219,7 @@
                 backupGame();
                 unhide_next();
                 hide_ok();
+
             }
 
 
@@ -1210,7 +1241,8 @@
                     hide_ok();
                 }
                 else{
-                    disableAllBtms();
+                    // disableAllBtms();
+                    alert("بازی تمام شد")
                 }
             }
 
@@ -1226,6 +1258,7 @@
                 else{
                     disableAllBtms();
                 }
+
             }
 
 
@@ -1306,6 +1339,9 @@
 
             if (cur_key == 'msg_attar_opinion') {
                 update_cur_msg(cur_duty[cur_key][cur_msg_ind]);
+                if (sample[getRolePlayerName("عطار")][1]==0){
+                    hide_unhide_element(0, 'drop1');
+                }
                 last_duty = 'Attar_save';
                 hide_next();
                 unhide_ok();
@@ -1332,7 +1368,7 @@
                 populateDropdown_duty_custom(mafiaActions, "nameDropdown_duty");
 
                 // Populate second dropdown with alive citizen roles (player names)
-                let aliveCitizens = Object.keys(sample).filter(player => sample[player][1] === 1 && isCitizen(sample[player][0]));
+                let aliveCitizens = Object.keys(sample).filter(player => sample[player][1] === 1)// && isCitizen(sample[player][0]));
                 populateDropdown_duty_custom(aliveCitizens, "nameDropdown_duty2");
 
                 // Make dropdowns visible
@@ -1377,16 +1413,21 @@
             if (cur_key == 'msg_doctor') {
                 let alives ="";
                 last_duty = "doctor_save";
-                if (game_info['Doctor_self_save']==0){
-                    update_cur_msg(cur_duty[cur_key][cur_msg_ind]);
-                    alives = Object.keys(sample).filter(player => sample[player][1] === 1);
-                }
-                else{
-                    alives = Object.keys(sample).filter(player => sample[player][1] === 1 && sample[player][0] !== "دکتر");
-                    update_cur_msg(cur_duty[cur_key][cur_msg_ind] + "(خودت رو یک بار نجات دادی)");
-                }
+                if (sample[getRolePlayerName("دکتر")][1]==1){
+                    if (game_info['Doctor_self_save']==0){
+                        update_cur_msg(cur_duty[cur_key][cur_msg_ind]);
+                        alives = Object.keys(sample).filter(player => sample[player][1] === 1);
+                    }
+                    else{
+                        alives = Object.keys(sample).filter(player => sample[player][1] === 1 && sample[player][0] !== "دکتر");
+                        update_cur_msg(cur_duty[cur_key][cur_msg_ind] + "(خودت رو یک بار نجات دادی)");
+                    }
 
-                populateDropdown_duty_custom(alives, "nameDropdown_duty");
+                    populateDropdown_duty_custom(alives, "nameDropdown_duty");
+                } else {
+                    hide_unhide_element(0, 'drop1');
+                    update_cur_msg(cur_duty[cur_key][cur_msg_ind] + " (دکتر در بازی نیست)");
+                }
                 hide_next();
                 unhide_ok();
                 cur_msg_ind++;
@@ -1396,12 +1437,26 @@
 
                         
             if (cur_key == 'msg_karagah') {
+                // alert(getRolePlayerName("کاراگاه"));
+                // alert(sample[getRolePlayerName("کاراگاه")]);
+                // alert(sample[getRolePlayerName("کاراگاه")][1]);
+                // alert(sample[getRolePlayerName("کاراگاه")][1]==0);
+                if (sample[getRolePlayerName("کاراگاه")][1]==0){
+                    update_cur_msg(cur_duty[cur_key][cur_msg_ind]+ " (کاراگاه در بازی نیست)");
+                    hide_unhide_element(0, 'drop1');
+                    
+                } else {
                 update_cur_msg(cur_duty[cur_key][cur_msg_ind]);
-                last_duty = "karagah_inq";
                 let alives = Object.keys(sample).filter(player => sample[player][1] === 1 && sample[player][0]!=="کاراگاه");
                 populateDropdown_duty_custom(alives, "nameDropdown_duty");
+                }
+
+                last_duty = "karagah_inq";
                 hide_next();
                 unhide_ok();
+                if (wake_doctor===0){
+                    cur_key_ind ++;
+                }
                 cur_msg_ind++;
 
 
@@ -1476,7 +1531,7 @@
         }
 
         function runDay_duty (){
-            hide_unhide_cur_msg(k=0);
+
 
             unhide_next();
      
@@ -1534,31 +1589,38 @@
 
         function runNight_duty(){
             document.getElementById("RunMode").textContent = "شب";
-            hide_unhide_cur_msg();
+
             unhide_next();
             cur_duty = {}
             cur_msg_ind = 0
             cur_key_ind = 0
             cur_duty['msg_vares'] = ["وارث، بیدار شو."];
             cur_duty['msg_vares2'] = ["وارث، بخواب."];
-            if (game_info['Attar_poison'] !== '') {
-            let poisoned_player = game_info['Attar_poison'];
+            if (game_info['Attar_poison'] !== '' && attar_job_done===false) {
+                attar_job_done=true;
+                let poisoned_player = game_info['Attar_poison'];
 
 
                     if (sample[poisoned_player][1] == 0) {
-                    cur_duty['mgb'] = [`سم وارد بدن ${poisoned_player} شده بود که از بازی، خارج شدند.`];
-                    hide_ok(); // Disable confirm button
-                } else{
-                    cur_duty['msg_attar_save'] = [
+                        cur_duty['mgb'] = [`سم وارد بدن ${poisoned_player} شده بود که از بازی، خارج شدند.`];
+                        hide_ok(); // Disable confirm button
+                    } else{
+                        cur_duty['msg_attar_save'] = [
                         `سم وارد بدن ${poisoned_player} شده، آیا موافق دادن پادزهر هستید؟ اگر هستید، دستتون رو بالا بیارد.`
-                    ];
-                    cur_duty['msg_attar_opinion'] = ["خیلی خوب، بخوابید. عطار، بیدار شو، نظر خودت چی هست؟"];
+                        ];
+                        if (sample[getRolePlayerName("عطار")][1]==0){
+                            cur_duty['msg_attar_opinion'] = ["خیلی خوب، بخوابید. عطار، بیدار شو، نظر خودت چی هست؟ (عطار در بازی نیست، تصمیم اکثریت اعمال میشه)"];
+                        }else{
+                            cur_duty['msg_attar_opinion'] = ["خیلی خوب، بخوابید. عطار، بیدار شو، نظر خودت چی هست؟"];
+                        }
+                        
                     }
 
                 }
-            cur_duty['msg_mafia_wake_up'] = ["تیم مافیا، بیدار شید."];
-            cur_duty['msg_mafia'] = ["تیم مافیا، بیدار شید. تصمیم امشبتون چیه؟"];
+            cur_duty['msg_mafia_wake_up'] = ["تیم مافیا، بیدار شید. تصمیم امشبتون چیه؟"];
+            cur_duty['msg_mafia'] = ["تصمیم امشبتون چیه؟"];
             cur_duty['msg_jadoo'] = ["جادوگر، کی رو جادو میکنی؟"];
+
             cur_duty['msg_karagah'] = ["کاراگاه، استعلام کی رو میخوایی بگیری؟"];
             cur_duty['msg_doctor'] = ["دکتر، بیدار شو، کی رو نجات میدی؟"];
 
@@ -1673,7 +1735,13 @@
 
 
         function ReassignVares(killed_player){
-            if (["عطار", "دکتر", "کاراگاه"].includes(sample[killed_player][0]) && game_info.Vares_selection===killed_player){
+            if (["عطار", "دکتر", "کاراگاه"].includes(sample[killed_player][0]) && game_info.Vares_selection===killed_player && Object.entries(sample).filter(([key, value]) => value[1] === 1 && value[0]=== "وارث").length>0){
+
+                sample[Object.keys(sample).filter(key => sample[key][0]=="وارث")[0]][0] = sample[killed_player][0];
+                if (sample[killed_player][0]=="دکتر"){
+                    game_info.Doctor_self_save = 0;
+                }
+                sample[killed_player][0] = "شهروند ساده"
                 game_info.Vares_reassignment = 1;
                 vares_new_role = sample[killed_player][0];
             }
