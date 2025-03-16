@@ -24,6 +24,14 @@
             color: white;
             direction: rtl;
         }
+
+        select {
+            font-family: inherit; /* Makes dropdown font match other text */
+            font-size: 23px;  /* Adjust size */
+            font-weight: bold; /* Optional */
+            padding: 5px; /* Adds spacing inside dropdown */
+        }
+
         .container {
             margin: 20px auto;
             padding: 15px;
@@ -72,6 +80,7 @@
             Font-weight: bold;
         }
         .role-item {
+            font-size: 30px;
             display: flex;
             justify-content: space-between;
             align-items: center;
@@ -84,14 +93,16 @@
             display: none;
         }
         button {
+            font-family: inherit;
             background: red;
             color: white;
             border: none;
             padding: 10px;
-            font-size: 18px;
+            font-size: 25px;
             cursor: pointer;
             border-radius: 5px;
             transition: 0.3s;
+            font-weight: bold;
         }
        .content {
             padding: 20px;
@@ -110,13 +121,14 @@
             width: 80%;
         }
         .spacer {
-            height: 60px; /* Adjust the height as needed */
+            height: 140px; /* Adjust the height as needed */
         }
 
         button:hover {
             background: darkred;
         }
-        h2, h3 {
+        h1, h2, h3 {
+            font-size: 3em;
             text-shadow: 2px 2px 5px red;
         }
 
@@ -161,21 +173,21 @@
         #playerTable {
             width: 80%;
             margin: 0 auto; /* Centers the table horizontally */
-}
+        }
+                #gameInfoTable {
+                    width: 70%;
+                    margin: 0 auto; /* Centers the table horizontally */
+        }
         #gameInfoTable {
-            width: 70%;
-            margin: 0 auto; /* Centers the table horizontally */
-}
-#gameInfoTable {
-    color: black;
-}
-#gameInfoTable tr:nth-child(odd) {
-    background-color: white;
-}
+            color: black;
+        }
+        #gameInfoTable tr:nth-child(odd) {
+            background-color: white;
+        }
 
-#gameInfoTable tr:nth-child(even) {
-    background-color: #e0e0e0; /* Slightly darker gray */
-}
+        #gameInfoTable tr:nth-child(even) {
+            background-color: #e0e0e0; /* Slightly darker gray */
+        }
     </style>
 </head>
 <body>
@@ -183,7 +195,7 @@
         <audio id="audioPlayer" controls>
             Your browser does not support the audio element.
         </audio>
-        <select id="songSelector"></select>
+        <select id="songSelector" style="font-size: 30px;"></select>
     </div>
     <div id="stage1">
         <h1>تیم مافیا گنگ دالاس</h1>
@@ -208,18 +220,20 @@
         
         <div class="container" style="width: fit-content; margin: auto; text-align: right;">
             <h3 style="text-align: center;">مجموع نقش‌ها</h3>
-            <div style="display: flex; flex-direction: column; align-items: flex-end; gap: 5px; width: 100%;">
-                <label>شهروند: <input type="text" id="citizen-count" readonly></label>
-                <label>مافیا: <input type="text" id="mafia-count" readonly></label>
-                <label>مستقل: <input type="text" id="independent-count" readonly></label>
-                <label>کل: <input type="text" id="total-count" readonly></label>
+            <div style="display: flex; flex-direction: column; align-items: flex-end; gap: 5px; width: 100%; font-size: 2em;">
+                <label>شهروند: <input type="text" id="citizen-count" style="font-size: 0.7em;" ></label>
+                <label>مافیا: <input type="text" id="mafia-count" style="font-size: 0.7em;" readonly></label>
+                <label>مستقل: <input type="text" id="independent-count" style="font-size: 0.7em;" readonly></label>
+                <label>کل: <input type="text" id="total-count" style="font-size: 0.7em;" readonly></label>
             </div>
         </div>
         
-        <button style="margin-top: 15px; margin-bottom: 100px;"  onclick="assignRoles()">اختصاص نقش</button>
-        <button style="margin-top: 15px;"  onclick="resetRoles()">بازنشانی</button>
+        <button style="margin-top: 15px; margin-bottom: 130px;"  onclick="assignRoles()">اختصاص نقش</button>
+        <button style="margin-top: 15px;"  onclick="resetRoles()">ریست</button>
+        <button style="margin-top: 15px;"  onclick="restoreGame()">بازنشانی آخرین بازی</button>
+        <button style="margin-top: 15px;"  onclick="clearBackup()">پاک کردن آخرین بازی</button>
     </div>
-    
+
 
 
 
@@ -235,7 +249,7 @@
 
 
         <!-- <button style="position: absolute; bottom: 100px; left: 10px; width: 30%; text-align: center; display: flex; align-items: center; justify-content: center;" onclick="downloadPDF()">دانلود</button> -->
-        <button style="position: absolute; bottom: 100px; left: 50%; transform: translateX(-50%); width: 30%;" onclick="godPage()">صفحه گرداننده</button>
+        <button style="position: absolute; bottom: 150px; left: 50%; transform: translateX(-50%); width: 30%;" onclick="godPage()">صفحه گرداننده</button>
 
     </div>
     
@@ -334,6 +348,7 @@
             <button class="stop-button" id="cur_next_btm" onclick="nextMessage()">بعدی</button>
             <button class="stop-button" id="cur_confirm_btm" onclick="cur_confirm()" hidden="True">تایید</button>
             <button class="stop-button" id="gameInfoBtm" onclick="showData()">اطلاعات بازی</button>
+            <button class="stop-button"  onclick="restoreGame_2()">بازنشانی آخرین بازی</button>
             <button style="
             padding: 10px; 
             background-color: darkred; 
@@ -403,7 +418,7 @@
            'Vares_reassignment': 0,
            'Vares_informed': 0, 
            'Remaining_Inquery_count': 2, 
-           'Yakooza_casualty':'No one', 
+           'antidote':'رییس مافیا', 
            'day_1': 1,
            'game_live': 1, 
            };
@@ -451,6 +466,146 @@
         let night_casualty = '';
 
 
+
+        function backupGame() {
+            let gameData = {
+                sample,
+                game_info,
+                cur_duty,
+                cur_msg_ind,
+                cur_key_ind,
+                keys,
+                last_duty,
+                vares_new_role,
+                wake_doctor,
+                mafia_jadoo_player,
+                mafia_shot_player,
+                night_casualty,
+
+                // Buttons
+                cur_next_btm: {
+                    onclick: cur_next_btm.getAttribute("onclick"),
+                    hidden: cur_next_btm.hidden
+                },
+                cur_confirm_btm: {
+                    onclick: cur_confirm_btm.getAttribute("onclick"),
+                    hidden: cur_confirm_btm.hidden
+                },
+
+                // Text Elements
+                cur_message: {
+                    textContent: cur_message.textContent,
+                    hidden: cur_message.hidden
+                },
+                RunMode: {
+                    textContent: RunMode.textContent,
+                    hidden: RunMode.hidden
+                },
+
+                // Dropdowns
+                nameDropdown_duty: {
+                    options: Array.from(nameDropdown_duty.options).map(option => ({ value: option.value, text: option.text, selected: option.selected })),
+                    hidden: nameDropdown_duty.hidden,
+                    onclick: nameDropdown_duty.getAttribute("onclick"),
+                    onchange: nameDropdown_duty.getAttribute("onchange")
+                },
+                nameDropdown_duty2: {
+                    options: Array.from(nameDropdown_duty2.options).map(option => ({ value: option.value, text: option.text, selected: option.selected })),
+                    hidden: nameDropdown_duty2.hidden,
+                    onclick: nameDropdown_duty2.getAttribute("onclick"),
+                    onchange: nameDropdown_duty2.getAttribute("onchange")
+                },
+                nameDropdown_duty3: {
+                    options: Array.from(nameDropdown_duty3.options).map(option => ({ value: option.value, text: option.text, selected: option.selected })),
+                    hidden: nameDropdown_duty3.hidden,
+                    onclick: nameDropdown_duty3.getAttribute("onclick"),
+                    onchange: nameDropdown_duty3.getAttribute("onchange")
+                }
+            };
+
+            localStorage.setItem("gameBackup", JSON.stringify(gameData));
+        }
+
+        function restoreGame_2() {
+            let confirmed = confirm("مطمئنی؟");
+            if (confirmed) {
+                confirmed = confirm("دوباره میپرسم، مطمئنی؟");
+                if (confirmed) {
+                    restoreGame();
+                    alert("انجام شد."); // Replace this with the actual action
+                } 
+                
+            } 
+        }
+
+        function restoreGame() {
+            let savedData = localStorage.getItem("gameBackup");
+
+            if (!savedData) {
+                alert("بازی قبلی وجود ندارد.");
+                return;
+            }
+
+            let gameData = JSON.parse(savedData);
+
+            // Restore game variables
+            sample = gameData.sample;
+            game_info = gameData.game_info;
+            cur_duty = gameData.cur_duty;
+            cur_msg_ind = gameData.cur_msg_ind;
+            cur_key_ind = gameData.cur_key_ind;
+            keys = gameData.keys;
+            last_duty = gameData.last_duty;
+            vares_new_role = gameData.vares_new_role;
+            wake_doctor = gameData.wake_doctor;
+            mafia_jadoo_player = gameData.mafia_jadoo_player;
+            mafia_shot_player = gameData.mafia_shot_player;
+            night_casualty = gameData.night_casualty;
+
+            // Restore buttons
+            cur_next_btm.setAttribute("onclick", gameData.cur_next_btm.onclick);
+            cur_next_btm.hidden = gameData.cur_next_btm.hidden;
+            cur_confirm_btm.setAttribute("onclick", gameData.cur_confirm_btm.onclick);
+            cur_confirm_btm.hidden = gameData.cur_confirm_btm.hidden;
+
+            // Restore text elements
+            cur_message.textContent = gameData.cur_message.textContent;
+            cur_message.hidden = gameData.cur_message.hidden;
+            RunMode.textContent = gameData.RunMode.textContent;
+            RunMode.hidden = gameData.RunMode.hidden;
+
+            // Restore dropdowns
+            function restoreDropdown(dropdown, data) {
+                dropdown.innerHTML = ""; // Clear previous options
+                data.options.forEach(optionData => {
+                    let option = document.createElement("option");
+                    option.value = optionData.value;
+                    option.textContent = optionData.text;
+                    option.selected = optionData.selected;
+                    dropdown.appendChild(option);
+                });
+                dropdown.hidden = data.hidden;
+                dropdown.setAttribute("onclick", data.onclick);
+                dropdown.setAttribute("onchange", data.onchange);
+            }
+
+
+            restoreDropdown(nameDropdown_duty, gameData.nameDropdown_duty);
+            restoreDropdown(nameDropdown_duty2, gameData.nameDropdown_duty2);
+            restoreDropdown(nameDropdown_duty3, gameData.nameDropdown_duty3);
+            alert("بازی با موفقیت لود شد");
+
+            document.getElementById("stage1").classList.add("hidden");
+            document.getElementById("stage2").classList.add("hidden");
+            document.getElementById("GodPage").classList.remove("hidden");
+
+            
+        }
+
+        function clearBackup() {
+            localStorage.removeItem("gameBackup");
+            alert("بازی قبلی پاک شد.");
+        }
 
 
         function applyPreselectedRoles(preselectedRoles) {
@@ -738,7 +893,9 @@
             if (last_duty == "kapo_casualty"){
 
                 if (document.getElementById("nameDropdown_duty").value != "هیچ کس"){
-                    
+                    if (sample[document.getElementById("nameDropdown_duty").value][0] === "رییس مافیا"){
+                        game_info.antidote = "جادوگر";
+                    }
                     sample[document.getElementById("nameDropdown_duty").value][1]=0;
                     ReassignVares(document.getElementById("nameDropdown_duty").value);
                     update_cur_msg("خداحافظی میکنیم با " + document.getElementById("nameDropdown_duty").value  + " با "+ persian_categories[role_side[sample[document.getElementById("nameDropdown_duty").value][0]]]+". شبه، بخوابید.");
@@ -757,8 +914,8 @@
                 let poisoned_player = game_info['Attar_poison'];
 
 
-                let isGodfather = sample[poisoned_player][0] === "رییس مافیا";
-                let poisonFatal = (!isGodfather && document.getElementById("nameDropdown_duty").value == 'خیر');
+                let hasAntidote = sample[poisoned_player][0] === game_info.antidote;
+                let poisonFatal = (!hasAntidote && document.getElementById("nameDropdown_duty").value == 'خیر');
 
                 if (poisonFatal) {
                     sample[poisoned_player][1] = 0; // Mark player as dead
@@ -839,7 +996,7 @@
                 update_cur_msg("بسیار خوب.");
 
                 let Doctor_save = document.getElementById("nameDropdown_duty").value;
-                if (sample[Doctor_save]=='دکتر'){
+                if (sample[Doctor_save][0]=='دکتر'){
                     game_info.Doctor_self_save = 1;
                 }
                 if (sample[mafia_jadoo_player][0] == 'دکتر'){
@@ -864,7 +1021,7 @@
                 if (sample[mafia_jadoo_player][0] == 'کاراگاه'){
                     Karagah_inq = mafia_jadoo_player;}
                 
-                if (["جادوگر", "جلاد", "مظنون"].includes(sample[Karagah_inq][0])){
+                if (["جادوگر", "جلاد", "مظنون", "مافیا ساده"].includes(sample[Karagah_inq][0])){
                     update_cur_msg("لایک");
                 }
                 else {
@@ -990,7 +1147,9 @@
             if (cur_key=='mgb_intro_night_end'){
                 update_cur_msg(cur_duty[cur_key][cur_msg_ind]);
                 document.getElementById("RunMode").textContent = "روز یک";
+                
                 runDay_duty();
+                backupGame();
                 unhide_next();
                 hide_ok();
             }
@@ -1002,7 +1161,9 @@
             
             if (cur_key=='mgb_end_day1'){
                 update_cur_msg(cur_duty[cur_key][cur_msg_ind]);
+                
                 runIntroNight_duty();
+                backupGame();
                 unhide_next();
                 hide_ok();
             }
@@ -1019,7 +1180,9 @@
                     }
                     
                     document.getElementById("RunMode").textContent = "روز";
+                    backupGame();
                     runDay_duty();
+                    backupGame();
                     unhide_next();
                     hide_ok();
                 }
@@ -1033,6 +1196,7 @@
                     update_cur_msg("بسیار خوب، شبه، بخوابید.")
                     document.getElementById("RunMode").textContent = "روز";
                     runNight_duty();
+                    backupGame();
                     unhide_next();
                     hide_ok();
                 }
@@ -1307,7 +1471,7 @@
             [live_citizen_count, live_mafia_count] = getInquiryLive();
             
             if (live_citizen_count<=live_mafia_count){
-                cur_duty['mgb_mafia_win'] = ["تیم مافیا برنده شده"]
+                cur_duty['mgb_mafia_win'] = ["تیم مافیا برنده شده"];
                 game_info['game_live'] = 0;
                 keys = Object.keys(cur_duty);
                 return null;
@@ -1321,17 +1485,17 @@
             }
             if (game_info['day_1']==1){
                 game_info['day_1']=0;
-                cur_duty['mgb'] = ["امروز قراره تصمیم بگیرم تفنگ کاپو به کی میرسه"]
-                cur_duty["msg_kapo_casualty"] = ["تفنگ کاپو امروز کی رو کشت؟"]
+                cur_duty['mgb'] = ["امروز قراره تصمیم بگیرم تفنگ کاپو به کی میرسه"];
+                cur_duty["msg_kapo_casualty"] = ["تفنگ کاپو امروز کی رو کشت؟"];
             } 
             else{
                 if (game_info['Remaining_Inquery_count']>0){
                     cur_duty['msg_day_inquery'] = [persian_numbers[game_info['Remaining_Inquery_count']]+" استعلام باقی مونده، آیا استعلام میخوایید؟"];
                 }
                 else {
-                    cur_duty['mgb'] = ["استعلامی براتون باقی نمونده"]
+                    cur_duty['mgb'] = ["استعلامی براتون باقی نمونده"];
                 }
-                    cur_duty["msg_day_casualty"] = ["امروز کی کشته شد؟"]
+                    cur_duty["msg_day_casualty"] = ["امروز کی کشته شد؟"];
                 }
             cur_duty['mgb_day_end'] = ["بسیار خوب، شبه، بخوابید"];
                 keys = Object.keys(cur_duty); 
@@ -1517,6 +1681,7 @@
 
 
         function startTimer(inputId) {
+            stopAlarm();
             clearInterval(countdown);
             let time = document.getElementById(inputId).value;
             lastTime = parseInt(time);
@@ -1553,6 +1718,7 @@
         }
 
         function restartTimer() {
+            stopAlarm();
             clearInterval(countdown);
             let timerDisplay = document.getElementById("timer");
             let secondsRemaining = lastTime;
@@ -1583,6 +1749,7 @@
             if (rolePool.length >0){
                 alert("نقش دهی کامل نشده")
             } else {
+                backupGame();
                 downloadPDF();
                 document.getElementById("stage2").classList.add("hidden");
                 document.getElementById("GodPage").classList.remove("hidden");
@@ -2262,7 +2429,7 @@ function populateGameInfoTable() {
 
     let persianLabels = [
         "انتخاب وارث", "انتخاب عطار", "تعداد نجات دکتر روی خودش", "تغییر نقش وارث", 
-        "اطلاع رسانی به وارث", "تعداد استعلام باقی مانده", "تلفات یاکوزایی", "روز تفنگ کاپو", "بازی در جریان"
+        "اطلاع رسانی به وارث", "تعداد استعلام باقی مانده", "پادزهر تیم مافیا", "روز تفنگ کاپو", "بازی در جریان"
     ];
 
     let keys = Object.keys(game_info);
@@ -2293,13 +2460,13 @@ function populateGameInfoTable() {
 
 
 
-// const songs = [
-//     "Armagan Oruc - Arvb.mp3",
+// const songs = [04 Aziztarin.mp3 03 Golpari.mp3 [LinkMusic]Chin Chin Daaman(20349).mp3 Aref Sadeh Del 128 .mp3
+//     "Armagan Oruc - Arvb.mp3", Shahram Shabpareh - Golab (Official Video).mp3
 //     "Yeki To Fekre Yare.mp3",
 //     "Homayoun Shajaryan - Arayeshe Ghaliz 2 (320).mp3",
 //     "SQUID GAME_ Pink Soldiers (Samuel Kim Remix)  EPIC VERSION.mp3",
 //     "Sting - Shape of my Heart (LCAW Remix).mp3",
-//     "The Godfather Theme Song (LBLVNC Trap Mix).mp3"
+//     "The Godfather Theme Song (LBLVNC Trap Mix).mp3"   Ebi-Shoma.mp3
 
 // ];
 
@@ -2308,11 +2475,18 @@ function populateGameInfoTable() {
 
 
 
-const songs = [
-    { name: "آهنگ کافه 1", file: "Armagan Oruc - Arvb.mp3" },
+const songs = [ 
+    { name: "آهنگ مافیا یک", file: "Moment of Realization.mp3"}, 
+    { name: "آهنگ مافیا دو", file: "Armagan Oruc - Arvb.mp3" },
+    { name: "ابی، شما اجرای کنسرت", file: "Ebi-Shoma.mp3" },
     { name: "حمیرا، یکی تو فکر یاره", file: "Yeki To Fekre Yare.mp3" },
+    { name: "حمیرا، عزیزترین", file: "04 Aziztarin.mp3" },
+    { name: "عمو حسن، دختر کولی", file: "[LinkMusic]Chin Chin Daaman(20349).mp3" },
+    { name: "عارف، ساده دل", file: "Aref Sadeh Del 128 .mp3" },
+    { name: "ستار، گل پری", file: "03 Golpari.mp3" },
+    { name: "شهرام شپره، گلاب", file: "Shahram Shabpareh - Golab (Official Video).mp3" },
     { name: "همایون، چه دانستم", file: "Homayoun Shajaryan - Arayeshe Ghaliz 2 (320).mp3" },
-    { name: "SQUID GAME_ Pink Soldiers", file: "SQUID GAME_ Pink Soldiers (Samuel Kim Remix)  EPIC VERSION.mp3" },
+    // { name: "SQUID GAME_ Pink Soldiers", file: "SQUID GAME_ Pink Soldiers (Samuel Kim Remix)  EPIC VERSION.mp3" },
     { name: "Sting - Shape of my Heart", file: "Sting - Shape of my Heart (LCAW Remix).mp3" },
     { name: "The Godfather Theme Song", file: "The Godfather Theme Song (LBLVNC Trap Mix).mp3" }
 ];
