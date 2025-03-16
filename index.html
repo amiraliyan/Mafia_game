@@ -23,6 +23,8 @@
             background-color: black;
             color: white;
             direction: rtl;
+            margin: 0;
+            padding: 0;
         }
 
         select {
@@ -116,6 +118,7 @@
             background: #333;
             padding: 10px 0;
             text-align: center;
+            z-index: 9999; 
         }
         .audio-player audio {
             width: 80%;
@@ -169,6 +172,15 @@
         .citizen-row {
             background-color: #b4e6b4; /* Light Green for Citizens */
         }
+        #GodPage {
+            position: absolute; /* Ensures no extra space */
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 80%;
+            text-align: center;
+        }
+
 
         #playerTable {
             width: 80%;
@@ -278,7 +290,7 @@
 
 
     <div id="GodPage" class="hidden">
-       <div class="container">
+       <div class="container" >
             <div class="timer" id="timer">00:00</div>
             
             <!-- Expanded to 10 Timers -->
@@ -393,6 +405,7 @@
         </table>
 
         <div class="spacer"></div>
+
 
 
 
