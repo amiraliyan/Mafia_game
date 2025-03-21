@@ -1736,14 +1736,14 @@
 
         function ReassignVares(killed_player){
             if (["عطار", "دکتر", "کاراگاه"].includes(sample[killed_player][0]) && game_info.Vares_selection===killed_player && Object.entries(sample).filter(([key, value]) => value[1] === 1 && value[0]=== "وارث").length>0){
-
+                vares_new_role = sample[killed_player][0];
                 sample[Object.keys(sample).filter(key => sample[key][0]=="وارث")[0]][0] = sample[killed_player][0];
                 if (sample[killed_player][0]=="دکتر"){
                     game_info.Doctor_self_save = 0;
                 }
                 sample[killed_player][0] = "شهروند ساده"
                 game_info.Vares_reassignment = 1;
-                vares_new_role = sample[killed_player][0];
+                
             }
         }
 
