@@ -1085,6 +1085,21 @@
                 hide_unhide_element(0, 'drop1')
             } 
 
+            if (last_duty == 'Attar_5_2') {
+                if (mafia_jadoo_player !=="" && sample[mafia_jadoo_player][0]=="عطار"){
+                    game_info.Attar_poison = getRolePlayerName("عطار");
+
+                }else {
+                    game_info.Attar_poison = document.getElementById("nameDropdown_duty").value;
+                }
+                update_cur_msg("سم عطار وارد بازی شد");
+                
+                hide_unhide_element(0, 'drop1');
+                unhide_next();
+                hide_ok();
+            } 
+            
+
             if (last_duty == 'Attar_5') {
 
                 if (document.getElementById("nameDropdown_duty").value=="بله"){
@@ -1092,6 +1107,7 @@
                     let poisanables = Object.keys(sample).filter(player => sample[player][0]!=="عطار" && (sample[player][1]==1  || player == night_casualty));
                     populateDropdown_duty_custom(poisanables, "nameDropdown_duty");
                     update_cur_msg("سم وارد بدن کی بشه؟")
+                    return null;
                     // cur_msg_ind++;
                     // if (cur_msg_ind==cur_duty[cur_key].length){
                     //     cur_msg_ind = 0;
@@ -1107,19 +1123,7 @@
             } 
 
 
-            if (last_duty == 'Attar_5_2') {
-                if (mafia_jadoo_player !=="" && sample[mafia_jadoo_player][0]=="عطار"){
-                    game_info.Attar_poison = getRolePlayerName("عطار");
 
-                }else {
-                    game_info.Attar_poison = document.getElementById("nameDropdown_duty").value;
-                }
-                update_cur_msg("سم عطار وارد بازی شد");
-                
-                hide_unhide_element(0, 'drop1');
-                unhide_next();
-                hide_ok();
-            } 
 
             
 
