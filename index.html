@@ -818,7 +818,10 @@
                 sample[currentEditingPlayer_simple][0] = selectedRole;
                 sample[currentEditingPlayer_simple][1] = isAlive;
                 populateTable_simple();
+
                 closeModal_simple();
+            document.getElementById('deadInq').textContent = getInquiry(); 
+            document.getElementById('liveInq').textContent = getInquiryLiveText(); 
         }
         }
 
