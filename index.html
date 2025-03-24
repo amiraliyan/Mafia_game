@@ -44,9 +44,9 @@
             box-shadow: 0px 0px 10px red;
         }
         .timer {
-            font-size: 24px;
+            font-size: 35px;
             margin-bottom: 20px;
-            color: red;
+            color: rgb(255, 255, 255);
         }
         .input-group {
             display: flex;
@@ -152,14 +152,64 @@
         th {
             background-color: #d4e1ff; /* Light Blue Header */
             font-weight: bold;
+            color: black;
+        }
+        tr.dead {
+            opacity: 0.5;
         }
 
-        .alive {
+        td[onclick] {
+            cursor: pointer;
+            text-decoration: underline;
+        }
+
+        #playerTable_simple {
+            margin: 20px auto; /* Horizontally center the table */
+        }
+
+        /* Modal */
+        #editModal_simple {
+            display: none;
+            position: fixed;
+            top: 100px;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: #fefefe;
+            border: 1px solid #888;
+            padding: 15px;
+            z-index: 1000;
+            width: 300px;
+            font-size: 1.1em;
+            box-shadow: none;
+            border-radius: 4px;
+            color: black; /* 👈 Add this line */
+        }
+
+        #modalOverlay_simple {
+            display: none;
+            position: fixed;
+            top: 0; left: 0;
+            width: 100vw; height: 100vh;
+            background-color: rgba(0,0,0,0.5);
+            z-index: 999;
+        }
+
+        #editModal_simple button {
+            background-color: #ddd;
+            color: black;
+            font-size: 1em;
+            padding: 8px 12px;
+            border: 1px solid #aaa;
+            border-radius: 3px;
+            box-shadow: none;
+        }
+
+        .status-icon.alive {
             color: green;
             font-size: 1.5em;
         }
 
-        .dead {
+        .status-icon.dead {
             color: red;
             font-size: 1.5em;
         }
@@ -200,6 +250,29 @@
         #gameInfoTable tr:nth-child(even) {
             background-color: #e0e0e0; /* Slightly darker gray */
         }
+        .sticky-note-container {
+            margin: 20px auto;
+            width: 90%;
+            max-width: 800px;
+            text-align: right;
+        }
+
+        #stickyNote {
+            width: 100%;
+            min-height: 150px;
+            padding: 10px;
+            font-size: 1.1em;
+            resize: vertical; /* allows vertical resizing */
+            background-color: #ffffcc; /* sticky-note color */
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            font-family: inherit;
+            box-shadow: 0 0 5px rgba(255, 255, 0, 0.5);
+        }
+
+
+
+
     </style>
 </head>
 <body>
@@ -211,7 +284,13 @@
     </div>
     <div id="stage1">
         <h1>تیم مافیا گنگ دالاس</h1>
+        <button class="stop-button" onclick="applyPreselectedRoles(sniperScenario)">سناریو تکاور</button>
+        <button class="stop-button" onclick="applyPreselectedRoles(investigatorScenario)">سناریو بازپرس</button>
+        <button class="stop-button" onclick="applyPreselectedRoles(representitiveScenario)">سناریو نماینده</button>
+        <button class="stop-button" onclick="applyPreselectedRoles(negotionationScenario)">سناریو مذاکره</button>
+        <button class="stop-button" onclick="applyPreselectedRoles(darbarScenario)">سناریو دربار</button>
         <button class="stop-button" onclick="applyPreselectedRoles(kapoScenario)">سناریو کاپو</button>
+        <button class="stop-button" onclick="applyPreselectedRoles(zodiacScenario)">سناریو زودیاک</button>
         <button class="stop-button" onclick="resetRoles()">پاک کن</button>
 
 
@@ -239,7 +318,8 @@
                 <label>کل: <input type="text" id="total-count" style="font-size: 0.7em; width: 100px; text-align: center;" readonly></label>
             </div>
         </div>
-        
+
+        <button style="margin-top: 15px;" onclick="assignRoles(preassigned = true)">اختصاص نقش از پیش تعیین شده</button>
         <button style="margin-top: 15px;" onclick="assignRoles()">اختصاص نقش</button>
         <button style="margin-top: 15px;" onclick="resetRoles()">ریست</button>
         <button style="margin-top: 15px;" onclick="restoreGame()">بازنشانی آخرین بازی</button>
@@ -269,7 +349,31 @@
 
 
         <!-- <button style="position: absolute; bottom: 100px; left: 10px; width: 30%; text-align: center; display: flex; align-items: center; justify-content: center;" onclick="downloadPDF()">دانلود</button> -->
-        <button style="position: absolute; bottom: 130px; left: 50%; transform: translateX(-50%); width: 60%;" onclick="godPage()">صفحه گرداننده</button>
+        <button style="position: absolute; bottom: 130px; left: 30%; transform: translateX(-50%); width: 40%;" onclick="godPage()">صفحه گرداننده کاپو</button>
+        <button style="position: absolute; bottom: 130px; left: 70%; transform: translateX(-50%); width: 40%;" onclick="godPage_simple()">صفحه گرداننده ساده</button>
+
+    </div>
+
+    <div id="stage2_5" class="hidden">
+        <div class="container" style="
+            width: fit-content; 
+            position: absolute; 
+            top: 30px; 
+            left: 50%; 
+            transform: translateX(-50%);
+            text-align: center;">
+            <h2>اختصاص نقش</h2>
+            <button id="assign-role-btn" onclick="getRole_preassigned()">اختصاص نقش</button>
+            <p id="assigned-role" style="font-weight: bold; font-size: 34px;"></p>
+
+        </div>
+        <!-- <button style="position: absolute; bottom: 100px; right: 10px; width: 30%; text-align: center; display: flex; align-items: center; justify-content: center;" onclick="goBack()">بازگشت</button> -->
+        <!-- <button style="position: absolute; bottom: 100px; left: 10px; width: 30%; text-align: center; display: flex; align-items: center; justify-content: center;" onclick="downloadPDF()">دانلود</button> -->
+
+
+        <!-- <button style="position: absolute; bottom: 100px; left: 10px; width: 30%; text-align: center; display: flex; align-items: center; justify-content: center;" onclick="downloadPDF()">دانلود</button> -->
+        <button style="position: absolute; bottom: 130px; left: 30%; transform: translateX(-50%); width: 40%;" onclick="godPage()">صفحه گرداننده کاپو</button>
+        <button style="position: absolute; bottom: 130px; left: 70%; transform: translateX(-50%); width: 40%;" onclick="godPage_simple()">صفحه گرداننده ساده</button>
 
     </div>
     
@@ -289,135 +393,176 @@
 
 
 
+   
+
+
     <div id="GodPage" class="hidden">
-       <div class="container" >
-            <div class="timer" id="timer">00:00</div>
-            
-            <!-- Expanded to 10 Timers -->
-            <div class="input-group">
-                <input type="number" id="time1" value="30">
-                <button onclick="startTimer('time1')">تایمر معارفه</button>
-            </div>
-            <div class="input-group">
-                <input type="number" id="time2" value="30">
-                <button onclick="startTimer('time2')">تایمر چالش</button>
-            </div>
-            <div class="input-group">
-                <input type="number" id="time3" value="45">
-                <button onclick="startTimer('time3')">تایمر نوبت صحبت</button>
-            </div>
-            <div class="input-group">
-                <input type="number" id="time4" value="40">
-                <button onclick="startTimer('time4')">تایمر درباره</button>
-            </div>
-            <div class="input-group">
-                <input type="number" id="time5" value="40">
-                <button onclick="startTimer('time5')">تایمر کاور</button>
-            </div>
-            <div class="input-group">
-                <input type="number" id="time6" value="40">
-                <button onclick="startTimer('time6')">تایمر تارگت</button>
-            </div>
-            <div class="input-group">
-                <input type="number" id="time7" value="60">
-                <button onclick="startTimer('time7')">تایمر دفاع</button>
-            </div>
-            <div class="input-group">
-                <input type="number" id="time8" value="40">
-                <button onclick="startTimer('time8')">تایمر وصیت</button>
-            </div>
-            <div class="input-group">
-                <input type="number" id="time9" value="120">
-                <button onclick="startTimer('time9')">تایمر کیاس</button>
-            </div>
-            <div class="input-group">
-                <input type="number" id="time9" value="60">
-                <button onclick="startTimer('time9')">تایمر کیاس دوم</button>
-            </div>
-            
-            <div class="button-group">
-                <button class="stop-button" onclick="stopAlarm()">استاپ</button>
-                <button class="stop-button" onclick="restartTimer()">ریست</button>
-                <button class="stop-button" onclick="document.getElementById('alarmSound').play()">فعال سازی صدا</button>
-            </div>
-            
-        </div>
+        <div class="container" >
+             <div class="timer" id="timer">00:00</div>
+             
+             <!-- Expanded to 10 Timers -->
+             <div class="input-group">
+                 <input type="number" id="time1" value="30">
+                 <button onclick="startTimer('time1')">تایمر معارفه</button>
+             </div>
+             <div class="input-group">
+                 <input type="number" id="time2" value="30">
+                 <button onclick="startTimer('time2')">تایمر چالش</button>
+             </div>
+             <div class="input-group">
+                 <input type="number" id="time3" value="45">
+                 <button onclick="startTimer('time3')">تایمر نوبت صحبت</button>
+             </div>
+             <div class="input-group">
+                 <input type="number" id="time4" value="40">
+                 <button onclick="startTimer('time4')">تایمر درباره</button>
+             </div>
+             <div class="input-group">
+                 <input type="number" id="time5" value="40">
+                 <button onclick="startTimer('time5')">تایمر کاور</button>
+             </div>
+             <div class="input-group">
+                 <input type="number" id="time6" value="40">
+                 <button onclick="startTimer('time6')">تایمر تارگت</button>
+             </div>
+             <div class="input-group">
+                 <input type="number" id="time7" value="60">
+                 <button onclick="startTimer('time7')">تایمر دفاع</button>
+             </div>
+             <div class="input-group">
+                 <input type="number" id="time8" value="40">
+                 <button onclick="startTimer('time8')">تایمر وصیت</button>
+             </div>
+             <div class="input-group">
+                 <input type="number" id="time9" value="120">
+                 <button onclick="startTimer('time9')">تایمر کیاس</button>
+             </div>
+             <div class="input-group">
+                 <input type="number" id="time9" value="60">
+                 <button onclick="startTimer('time9')">تایمر کیاس دوم</button>
+             </div>
+             
+             <div class="button-group">
+                 <button class="stop-button" onclick="stopAlarm()">استاپ</button>
+                 <button class="stop-button" onclick="restartTimer()">ریست</button>
+                 <button class="stop-button" onclick="document.getElementById('alarmSound').play()">فعال سازی صدا</button>
+                 <button class="stop-button"  onclick="restoreGame_2()">بازنشانی آخرین وضعیت</button>
+                 <button class="stop-button" onclick="changeGodMod()" id="cur_god_mode">تغییر گردانندگی</button>
+             </div>
+             
+         </div>
 
+         <h2 id="deadInq" ></h2>
+         <h2 id="liveInq" ></h2>
+         <div class="sticky-note-container" id="MyNotes">
+            <label for="stickyNote">📝 یادداشت‌های من:</label><br>
+            <textarea id="stickyNote" placeholder="اینجا بنویس..." rows="10"></textarea>
+          </div>
 
-
-        <!-- <div class="container">
-            <h2>فاز بازی</h2>
-            <div class="button-group">
-                <button class="stop-button" id="intro_btm" onclick="runIntroNight_duty()">شب معارفه</button>
-                <button class="stop-button" id="day_btm" onclick="runDay_duty()">روز</button>
-                <button class="stop-button" id="night_btm" onclick="runNight_duty()">شب</button>
-
-                
-
-            </div>
-        </div> -->
-
-        <div class="container">
-            <h2 id="RunMode">روز معارفه</h2>
-            <div id="cur_message" style="font-size: 3em;">روزه. بیدار شید. سر صحبت، دور معارفه بدون تعارف چالش، بفرمایید.</div>
-            <div id="dataMsg"></div>
-            
-            <select id="nameDropdown_duty" hidden="True" style="font-size: 1.5em;"></select> 
-            <select id="nameDropdown_duty2" hidden="True" style="font-size: 1.5em;"></select>
-            <select id="nameDropdown_duty3" hidden="True" style="font-size: 1.5em;"></select>
-            <button class="stop-button" id="cur_next_btm" onclick="nextMessage()">بعدی</button>
-            <button class="stop-button" id="cur_confirm_btm" onclick="cur_confirm()" hidden="True">تایید</button>
-            <button class="stop-button" id="gameInfoBtm" onclick="showData()">اطلاعات بازی</button>
-            <button class="stop-button"  onclick="restoreGame_2()">بازنشانی آخرین وضعیت</button>
-            <!-- <button class="stop-button"  onclick="someinfo_()">some info</button> -->
-            <!-- <button style="
-            padding: 10px; 
-            background-color: darkred; 
-            color: white; 
-            border: none; 
-            cursor: pointer; 
-            margin: 5px; 
-            box-shadow: 0 0 5px red;
-            font-weight: bold;" 
-            onclick="goBack()" hidden="True">بازگشت</button> -->
-
-        </div>
-        <!-- <div id="someinfo"></div> -->
-
-        <table id="playerTable" hidden="True">
+        <table id="playerTable_simple">
             <thead>
                 <tr>
-                    <th>نقش</th>
-                    <th>نام</th>
-                    <th>وضعیت</th>
+                <th>نقش</th>
+                <th>نام</th>
+                <th>وضعیت</th>
                 </tr>
             </thead>
-            <tbody></tbody>
+            <tbody>
+                <!-- Rows populated by JS -->
+            </tbody>
         </table>
 
-        <table id="gameInfoTable" hidden="True">
-            <thead>
-                <tr>
-                    <th>اطلاعات</th>
-                    <th>نتیجه</th>
-                </tr>
-            </thead>
-            <tbody></tbody>
-        </table>
-
-        <div class="spacer"></div>
 
 
 
 
-        
 
-
-        <audio id="alarmSound" src="Alarm.mp3" loop></audio>
-    </div>
-
-
-
+        <!-- Modal -->
+        <div id="modalOverlay_simple" onclick="closeModal_simple()"></div>
+        <div id="editModal_simple">
+            <p id="playerNameDisplay_simple" style="font-size: 3em;"></p>
+            <label style="font-size: 3em;">
+                <input type="checkbox" id="aliveCheckbox_simple" > زنده؟
+            </label>
+            <br><br>
+            <label for="roleSelect_simple" style="font-size: 2.5em;">نقش:</label>
+            <select id="roleSelect_simple"></select>
+            <br><br>
+            <button onclick="savePlayerStatus_simple()">ذخیره</button>
+            <button onclick="closeModal_simple()">انصراف</button>
+        </div>
+ 
+ 
+         <!-- <div class="container">
+             <h2>فاز بازی</h2>
+             <div class="button-group">
+                 <button class="stop-button" id="intro_btm" onclick="runIntroNight_duty()">شب معارفه</button>
+                 <button class="stop-button" id="day_btm" onclick="runDay_duty()">روز</button>
+                 <button class="stop-button" id="night_btm" onclick="runNight_duty()">شب</button>
+ 
+                 
+ 
+             </div>
+         </div> -->
+ 
+         <div class="container" id="RunGameBox">
+             <h2 id="RunMode">روز معارفه</h2>
+             <div id="cur_message" style="font-size: 3em;">روزه. بیدار شید. سر صحبت، دور معارفه بدون تعارف چالش، بفرمایید.</div>
+             <div id="dataMsg"></div>
+             
+             <select id="nameDropdown_duty" hidden="True" style="font-size: 1.5em;"></select> 
+             <select id="nameDropdown_duty2" hidden="True" style="font-size: 1.5em;"></select>
+             <select id="nameDropdown_duty3" hidden="True" style="font-size: 1.5em;"></select>
+             <button class="stop-button" id="cur_next_btm" onclick="nextMessage()">بعدی</button>
+             <button class="stop-button" id="cur_confirm_btm" onclick="cur_confirm()" hidden="True">تایید</button>
+             <button class="stop-button" id="gameInfoBtm" onclick="showData()">اطلاعات بازی</button>
+             
+             <!-- <button class="stop-button"  onclick="someinfo_()">some info</button> -->
+             <!-- <button style="
+             padding: 10px; 
+             background-color: darkred; 
+             color: white; 
+             border: none; 
+             cursor: pointer; 
+             margin: 5px; 
+             box-shadow: 0 0 5px red;
+             font-weight: bold;" 
+             onclick="goBack()" hidden="True">بازگشت</button> -->
+ 
+         </div>
+         <!-- <div id="someinfo"></div> -->
+ 
+         <table id="playerTable" hidden="True">
+             <thead>
+                 <tr>
+                     <th>نقش</th>
+                     <th>نام</th>
+                     <th>وضعیت</th>
+                 </tr>
+             </thead>
+             <tbody></tbody>
+         </table>
+ 
+         <table id="gameInfoTable" hidden="True">
+             <thead>
+                 <tr>
+                     <th>اطلاعات</th>
+                     <th>نتیجه</th>
+                 </tr>
+             </thead>
+             <tbody></tbody>
+         </table>
+ 
+         <div class="spacer"></div>
+ 
+ 
+ 
+ 
+         
+ 
+ 
+         <audio id="alarmSound" src="Alarm.mp3" loop></audio>
+     </div>
 
 
 
@@ -439,6 +584,7 @@
            'Doctor_self_save': 0, 
            'Vares_reassignment': 0,
            'Vares_informed': 0, 
+           'vares_new_role':'',
            'Remaining_Inquery_count': 2, 
            'antidote':'رییس مافیا', 
            'day_1': 1,
@@ -447,11 +593,12 @@
 
 
         const roles = {
-            citizen: ["شهروند ساده", "شهروند خاص", "دکتر", "کاراگاه", "حرفه ای", "رویین تن", "نگهبان", "تفنگدار", "تکاور", "بازپرس", "هانتر", "راهنما", "مین گذار", "وکیل", "عطار", "اوشن", "محافظ", "مظنون", "زره ساز", "وارث", "کدخدا", "خبرنگار", "شهردار", "کنستانتین", "رمال", "قاضی","سربدار","کاتب","ریش سفید","شب گرد","کشیک","شمشیرساز", "روانشناس"],
-            mafia: [ "مافیا ساده", "رییس مافیا", "ناتو", "گروگان گیر", "مذاکره کننده", "بمبگذار", "جادوگر", "جلاد", "خبرچین", "شیاد", "یاغی","هکر","مزدور", "چریک"],
+            citizen: ["شهروند ساده", "شهروند خاص", "دکتر", "کاراگاه", "حرفه ای", "رویین تن", "نگهبان", "تفنگدار", "تکاور", "بازپرس", "هانتر", "راهنما", "مین گذار", "وکیل", "عطار", "اوشن", "محافظ", "مظنون", "وارث", "کدخدا", "خبرنگار", "شهردار", "کنستانتین", "رمال", "قاضی","سربدار","کاتب","ریش سفید","شب گرد","کشیک","شمشیرساز", "روانشناس"],
+            mafia: [ "مافیا ساده", "رییس مافیا", "ناتو", "گروگان گیر", "مذاکره کننده", "بمب گذار", "جادوگر", "جلاد", "خبرچین", "شیاد", "یاغی","هکر","مزدور", "چریک", "شعبده باز"],
             independent: ["زودیاک","جک","نوستراداموس", "شرلوک"]
         };
         const persian_categories = {citizen: "ساید شهروند", mafia: "ساید مافیا", independent: "ساید مستقل"}
+        const persian_categories_2 = {citizen: "شهروند", mafia: "مافیا", independent: "مستقل"}
         const persian_numbers = {
 1: "یک",2: "دو",3: "سه",4: "چهار",5: "پنج",6: "شش",7: "هفت",8: "هشت",9: "نه",10: "ده",11: "یازده",12: "دوازده",13: "سیزده",14: "چهارده",15: "پانزده",16: "شانزده",17: "هفده",18: "هجده",19: "نوزده",20: "بیست",21: "بیست و یک",22: "بیست و دو",23: "بیست و سه",24: "بیست و چهار",25: "بیست و پنج",26: "بیست و شش",27: "بیست و هفت",28: "بیست و هشت",29: "بیست و نه",30: "سی",31: "سی و یک",32: "سی و دو",33: "سی و سه",34: "سی و چهار",35: "سی و پنج",36: "سی و شش",37: "سی و هفت",38: "سی و هشت",39: "سی و نه",40: "چهل",41: "چهل و یک",42: "چهل و دو",43: "چهل و سه",44: "چهل و چهار",45: "چهل و پنج",46: "چهل و شش",47: "چهل و هفت",48: "چهل و هشت",49: "چهل و نه",50: "پنجاه",51: "پنجاه و یک",52: "پنجاه و دو",53: "پنجاه و سه",54: "پنجاه و چهار",55: "پنجاه و پنج",56: "پنجاه و شش",57: "پنجاه و هفت",58: "پنجاه و هشت",59: "پنجاه و نه",60: "شصت",61: "شصت و یک",62: "شصت و دو",63: "شصت و سه",64: "شصت و چهار",65: "شصت و پنج",66: "شصت و شش",67: "شصت و هفت",68: "شصت و هشت",69: "شصت و نه",70: "هفتاد",71: "هفتاد و یک",72: "هفتاد و دو",73: "هفتاد و سه",74: "هفتاد و چهار",75: "هفتاد و پنج",76: "هفتاد و شش",77: "هفتاد و هفت",78: "هفتاد و هشت",79: "هفتاد و نه",80: "هشتاد",81: "هشتاد و یک",82: "هشتاد و دو",83: "هشتاد و سه",84: "هشتاد و چهار",85: "هشتاد و پنج",86: "هشتاد و شش",87: "هشتاد و هفت",88: "هشتاد و هشت",89: "هشتاد و نه",90: "نود",91: "نود و یک",92: "نود و دو",93: "نود و سه",94: "نود و چهار",95: "نود و پنج",96: "نود و شش",97: "نود و هفت",98: "نود و هشت",99: "نود و نه",100: "صد"
 }
@@ -466,8 +613,8 @@
         let cur_key_ind = 0
         let keys = []
         let last_duty = ""
-        let vares_new_role = "";
         let attar_job_done = false;
+        let currentEditingPlayer_simple = null;
 
 
         keys = Object.keys(cur_duty);
@@ -484,11 +631,206 @@
             "جادوگر": true
         };
 
+
+        let sniperScenario = {
+            "شهروند ساده": 2,
+            "دکتر": true,
+            "کاراگاه": true,
+            "نگهبان": true,
+            "تفنگدار": true,
+            "تکاور": true,
+            "رییس مافیا": true,
+            "گروگان گیر": true,
+            "ناتو": true
+        };
+
+        let investigatorScenario = {
+            "شهروند ساده": 2,
+            "دکتر": true,
+            "کاراگاه": true,
+            "هانتر": true,
+            "بازپرس": true,
+            "رویین تن": true,
+            "رییس مافیا": true,
+            "شیاد": true,
+            "ناتو": true
+        };
+
+
+        let representitiveScenario = {
+            "شهروند ساده": 2,
+            "دکتر": true,
+            "راهنما": true,
+            "مین گذار": true,
+            "وکیل": true,
+            "محافظ": true,
+            "رییس مافیا": true,
+            "یاغی": true,
+            "هکر": true
+        };
+
+        let negotionationScenario = {
+            "شهروند ساده": 2,
+            "دکتر": true,
+            "کاراگاه": true,
+            "رویین تن": true,
+            "خبرنگار": true,
+            "حرفه ای": true,
+            "رییس مافیا": true,
+            "مذاکره کننده": true,
+            "مافیا ساده": 1
+        };
+
+        let darbarScenario = {
+            "شهروند ساده": 1,
+            "تفنگدار":true,
+            "شب گرد": true,
+            "دکتر": true,
+            "کاراگاه": true,
+            "سربدار": true,
+            "کاتب": true,
+            "ریش سفید": true,
+            "رییس مافیا": true,
+            "چریک": true,
+            "مزدور": true
+        };
+
+        let zodiacScenario = {
+            "شهروند ساده": 2,
+            "محافظ":true,
+            "اوشن": true,
+            "دکتر": true,
+            "کاراگاه": true,
+            "تفنگدار": true,
+            "حرفه ای": true,
+            "رییس مافیا": true,
+            "شعبده باز": true,
+            "بمب گذار": true,
+            "زودیاک": true
+        };
+
+
         let element_short_name = {"mgb": "cur_message", "drop1": "nameDropdown_duty", "drop2":"nameDropdown_duty2", "drop3":"nameDropdown_duty3"};
         let wake_doctor = 0;
         let mafia_jadoo_player = '';
         let mafia_shot_player = '';
         let night_casualty = '';
+
+
+
+        
+
+        function populateTable_simple() {
+            const tbody = document.querySelector("#playerTable_simple tbody");
+            tbody.innerHTML = "";
+
+            let mafiaPlayers = [];
+            let independentPlayers = [];
+            let citizenPlayers = [];
+
+            Object.entries(sample).forEach(([name, [role, alive]]) => {
+                let isAlive = alive === 1;
+
+                let textColor, backgroundColor;
+                if (roles.mafia.includes(role)) {
+                textColor = "white";
+                backgroundColor = "rgb(120, 0, 0)";
+                } else if (roles.independent.includes(role)) {
+                textColor = "black";
+                backgroundColor = "rgb(216,202,169)";
+                } else {
+                textColor = "black";
+                backgroundColor = "rgb(180, 230, 180)";
+                }
+
+                // const rowHTML = `
+                // <tr style="color: ${textColor}; background-color: ${backgroundColor};" class="${!isAlive ? 'dead' : ''}">
+                //     <td>${role}</td>
+                //     <td onclick="openModal_simple('${name.replace(/'/g, "\\'")}')">${name}</td>
+                //     <td>${isAlive ? "✅" : "❌"}</td>
+                // </tr>
+                // `;
+                const rowHTML = `
+                <tr style="color: ${textColor}; background-color: ${backgroundColor};" class="${!isAlive ? 'dead' : ''}">
+                    <td>${role}</td>
+                    <td onclick="openModal_simple('${name.replace(/'/g, "\\'")}')">${name}</td>
+                    <td><span class="status-icon ${isAlive ? "alive" : "dead"}">${isAlive ? "✅" : "❌"}</span></td>
+                </tr>
+                `;
+
+                if (roles.mafia.includes(role)) {
+                mafiaPlayers.push(rowHTML);
+                } else if (roles.independent.includes(role)) {
+                independentPlayers.push(rowHTML);
+                } else {
+                citizenPlayers.push(rowHTML);
+                }
+            });
+
+        tbody.innerHTML = mafiaPlayers.join("") + independentPlayers.join("") + citizenPlayers.join("");
+        }
+
+        function populateRoleDropdown_simple(selectedRole = "") {
+            const select = document.getElementById("roleSelect_simple");
+            select.innerHTML = "";
+
+            for (const [category, roleList] of Object.entries(roles)) {
+                const group = document.createElement("optgroup");
+
+                // 🔁 Use Persian label from persian_categories_2
+                group.label = persian_categories_2[category] || category;
+
+                roleList.forEach(role => {
+                    const option = document.createElement("option");
+                    option.value = role;
+                    option.textContent = role;
+                    if (role === selectedRole) option.selected = true;
+                    group.appendChild(option);
+                });
+
+                select.appendChild(group);
+            }
+        }
+
+        function openModal_simple(name) {
+            currentEditingPlayer_simple = name;
+            const [role, alive] = sample[name];
+
+            document.getElementById("playerNameDisplay_simple").textContent = `${name}`;
+            document.getElementById("aliveCheckbox_simple").checked = alive === 1;
+            populateRoleDropdown_simple(role);
+
+            document.getElementById("editModal_simple").style.display = "block";
+            document.getElementById("modalOverlay_simple").style.display = "block";
+            }
+
+            function closeModal_simple() {
+            document.getElementById("editModal_simple").style.display = "none";
+            document.getElementById("modalOverlay_simple").style.display = "none";
+            currentEditingPlayer_simple = null;
+        }
+
+        function savePlayerStatus_simple() {
+            const isAlive = document.getElementById("aliveCheckbox_simple").checked ? 1 : 0;
+            const selectedRole = document.getElementById("roleSelect_simple").value;
+
+            if (currentEditingPlayer_simple !== null) {
+                sample[currentEditingPlayer_simple][0] = selectedRole;
+                sample[currentEditingPlayer_simple][1] = isAlive;
+                populateTable_simple();
+                closeModal_simple();
+        }
+        }
+
+        
+
+
+
+
+
+
+
+
 
         function someinfo_(){
             document.getElementById('someinfo').textContent = JSON.stringify(cur_duty) + "  " + keys + "   " + cur_msg_ind    +  "  " +cur_key_ind
@@ -503,12 +845,12 @@
                 cur_key_ind,
                 keys,
                 last_duty,
-                vares_new_role,
                 wake_doctor,
                 mafia_jadoo_player,
                 mafia_shot_player,
                 night_casualty,
                 role_side,
+                currentEditingPlayer_simple,
 
                 // Buttons
                 cur_next_btm: {
@@ -576,6 +918,7 @@
             let gameData = JSON.parse(savedData);
 
             // Restore game variables
+            currentEditingPlayer_simple = gameData.currentEditingPlayer_simple;
             role_side = gameData.role_side;
             sample = gameData.sample;
             game_info = gameData.game_info;
@@ -584,7 +927,6 @@
             cur_key_ind = gameData.cur_key_ind;
             keys = gameData.keys;
             last_duty = gameData.last_duty;
-            vares_new_role = gameData.vares_new_role;
             wake_doctor = gameData.wake_doctor;
             mafia_jadoo_player = gameData.mafia_jadoo_player;
             mafia_shot_player = gameData.mafia_shot_player;
@@ -622,7 +964,9 @@
             restoreDropdown(nameDropdown_duty2, gameData.nameDropdown_duty2);
             restoreDropdown(nameDropdown_duty3, gameData.nameDropdown_duty3);
             alert("بازی با موفقیت لود شد");
-
+            populateTable_simple();
+            document.getElementById('deadInq').textContent = getInquiry();
+            document.getElementById('liveInq').textContent = getInquiryLiveText();
             document.getElementById("stage1").classList.add("hidden");
             document.getElementById("stage2").classList.add("hidden");
             document.getElementById("GodPage").classList.remove("hidden");
@@ -637,7 +981,7 @@
 
 
         function applyPreselectedRoles(preselectedRoles) {
-            alert("سناریو کاپو انتخاب شد (بنازم به این سلیقه)")
+            resetRoles();
             for (const category in roles) {
                 const container = document.getElementById(`${category}-roles`);
                 if (!container) continue; // Skip if container is not found
@@ -675,7 +1019,7 @@
             populateTable();
             populateGameInfoTable();
 
-            let tables = document.querySelectorAll("#playerTable, #gameInfoTable");
+            let tables = document.querySelectorAll("#gameInfoTable");
             let button = document.getElementById("gameInfoBtm");
 
             // Use getComputedStyle to check actual visibility
@@ -685,7 +1029,7 @@
             tables.forEach(table => {
                 table.style.display = isVisible ? "none" : "table";
             });
-
+ 
             // Update button text
             button.textContent = isVisible ? "اطلاعات بازی" : "مخفی کردن اطلاعات";
         }
@@ -885,7 +1229,13 @@
                 hide_ok()
             }
 
-
+            sample = {
+"علی": ["زودیاک", 1], 
+"امیر":["رییس مافیا", 1],
+"محمد": ["دکتر", 1], 
+"مانلی":["کاراگاه", 1],
+"محمود": ["شهروند ساده", 1]
+}
 
 
             if (last_duty == "day_casualty"){
@@ -1085,21 +1435,6 @@
                 hide_unhide_element(0, 'drop1')
             } 
 
-            if (last_duty == 'Attar_5_2') {
-                if (mafia_jadoo_player !=="" && sample[mafia_jadoo_player][0]=="عطار"){
-                    game_info.Attar_poison = getRolePlayerName("عطار");
-
-                }else {
-                    game_info.Attar_poison = document.getElementById("nameDropdown_duty").value;
-                }
-                update_cur_msg("سم عطار وارد بازی شد");
-                
-                hide_unhide_element(0, 'drop1');
-                unhide_next();
-                hide_ok();
-            } 
-            
-
             if (last_duty == 'Attar_5') {
 
                 if (document.getElementById("nameDropdown_duty").value=="بله"){
@@ -1123,7 +1458,19 @@
             } 
 
 
+            if (last_duty == 'Attar_5_2') {
+                if (mafia_jadoo_player !=="" && sample[mafia_jadoo_player][0]=="عطار"){
+                    game_info.Attar_poison = getRolePlayerName("عطار");
 
+                }else {
+                    game_info.Attar_poison = document.getElementById("nameDropdown_duty").value;
+                }
+                update_cur_msg("سم عطار وارد بازی شد");
+                
+                hide_unhide_element(0, 'drop1');
+                unhide_next();
+                hide_ok();
+            } 
 
             
 
@@ -1468,11 +1815,15 @@
 
 
             if (cur_key == 'msg_Attar_5') {
+                if (sample[getRolePlayerName("عطار")][1]==0){
+                    update_cur_msg(cur_duty[cur_key][cur_msg_ind]+"(عطار در بازی نیست، بعد از چند ثانیه بگو بسیار خوب، عطار بخوابه)");
+                } else {
                 update_cur_msg(cur_duty[cur_key][cur_msg_ind]);
                 last_duty = "Attar_5";
                 populateDropdown_duty_custom(["بله", "خیر"], "nameDropdown_duty");
                 hide_next();
                 unhide_ok();
+                }
                 cur_msg_ind++;
             }
 
@@ -1485,7 +1836,7 @@
                 }
 
                 if (game_info.Vares_reassignment==1 && game_info.Vares_informed==0){
-                    update_cur_msg(cur_duty[cur_key][cur_msg_ind]+`خدا، با اشاره نقش جدید وارث که ${vares_new_role} هست رو بهش بفهمون. در شب های بعد، در زمان صدا زدن نقش جدیدش باید بیدار بشه.`);
+                    update_cur_msg(cur_duty[cur_key][cur_msg_ind]+`خدا، با اشاره نقش جدید وارث رو که ${game_info.vares_new_role} بهش بفهمون. در شب های بعد، در زمان صدا زدن نقش جدیدش باید بیدار بشه.`);
                     game_info.Vares_informed = 1;
                     noMessage = 0;
 
@@ -1722,9 +2073,36 @@
             let deadCitizenCount = Object.entries(sample)
                 .filter(([key, value]) => value[1] === 0 && role_side[value[0]] === "citizen")
                 .length;
-                return persian_numbers[deadCitizenCount] + " شهروند و "+ persian_numbers[deadMafiaCount] + " مافیا از بازی خارج شدند."
-                //return `${deadCitizenCount} citizens and ${deadMafiaCount} mafias have been killed so far`;
+
+                if (Object.entries(sample).filter(([key, value]) => role_side[value[0]] === "independent").length>0){
+                    let deadIndepedentCount = Object.entries(sample).filter(([key, value]) => value[1] === 0 && role_side[value[0]] === "independent").length;
+                    return persian_numbers[deadCitizenCount] + " شهروند و "+ persian_numbers[deadMafiaCount] + " مافیا و " + persian_numbers[deadIndepedentCount] + " مستقل از بازی خارج شدند."
+                } else {
+                    return persian_numbers[deadCitizenCount] + " شهروند و "+ persian_numbers[deadMafiaCount] + " مافیا از بازی خارج شدند."
+                }
         }
+
+
+        function getInquiryLiveText() {
+            let deadMafiaCount = Object.entries(sample)
+                .filter(([key, value]) => value[1] === 1 && role_side[value[0]] === "mafia")
+                .length;
+            let deadCitizenCount = Object.entries(sample)
+                .filter(([key, value]) => value[1] === 1 && role_side[value[0]] === "citizen")
+                .length;
+
+                if (Object.entries(sample).filter(([key, value]) => role_side[value[0]] === "independent").length>0){
+                    let deadIndepedentCount = Object.entries(sample).filter(([key, value]) => value[1] === 1 && role_side[value[0]] === "independent").length;
+                    return persian_numbers[deadCitizenCount] + " شهروند و "+ persian_numbers[deadMafiaCount] + " مافیا و " + persian_numbers[deadIndepedentCount] + " مستقل در بازی هستند."
+                } else {
+                    return persian_numbers[deadCitizenCount] + " شهروند و "+ persian_numbers[deadMafiaCount] + " مافیا در بازی هستند."
+                }
+        }
+
+
+
+
+
 
         function getInquiryLive() {
             let liveMafiaCount = Object.entries(sample)
@@ -1740,11 +2118,12 @@
 
         function ReassignVares(killed_player){
             if (["عطار", "دکتر", "کاراگاه"].includes(sample[killed_player][0]) && game_info.Vares_selection===killed_player && Object.entries(sample).filter(([key, value]) => value[1] === 1 && value[0]=== "وارث").length>0){
-                vares_new_role = sample[killed_player][0];
+
                 sample[Object.keys(sample).filter(key => sample[key][0]=="وارث")[0]][0] = sample[killed_player][0];
                 if (sample[killed_player][0]=="دکتر"){
                     game_info.Doctor_self_save = 0;
                 }
+                game_info.vares_new_role = sample[killed_player][0];
                 sample[killed_player][0] = "شهروند ساده"
                 game_info.Vares_reassignment = 1;
                 
@@ -1847,11 +2226,58 @@
                 backupGame();
                 downloadPDF();
                 document.getElementById("stage2").classList.add("hidden");
+                document.getElementById("stage2_5").classList.add("hidden");
                 document.getElementById("GodPage").classList.remove("hidden");
                 populateTable();
                 populateGameInfoTable();
             }
         }
+
+        function godPage_simple(){
+            if (rolePool.length >0){
+                alert("نقش دهی کامل نشده")
+            } else {
+                backupGame();
+                downloadPDF();
+                document.getElementById("stage2").classList.add("hidden");
+                document.getElementById("stage2_5").classList.add("hidden");
+                document.getElementById("GodPage").classList.remove("hidden");
+                hide_unhide_element(0, 'RunGameBox');
+                hide_unhide_element(1, 'deadInq');
+                hide_unhide_element(1, 'liveInq');
+                hide_unhide_element(1, 'playerTable_simple');
+                document.getElementById('deadInq').textContent = getInquiry(); 
+                document.getElementById('liveInq').textContent = getInquiryLiveText(); 
+                populateTable_simple();
+                // populateTable();
+                // populateGameInfoTable();
+            }
+        }
+
+        function changeGodMod(){
+            if (document.getElementById('RunGameBox').hasAttribute("hidden")){
+                hide_unhide_element(1, 'RunGameBox');
+                // hide_unhide_element(0, 'deadInq');
+                // hide_unhide_element(0, 'liveInq');
+                // hide_unhide_element(0, 'playerTable_simple');
+            } else {
+                if (window.getComputedStyle(document.getElementById("gameInfoTable")).display !== "none"){
+                    showData();
+                }
+                hide_unhide_element(0, 'RunGameBox');
+
+                // hide_unhide_element(1, 'deadInq');
+                // hide_unhide_element(1, 'liveInq');
+                // hide_unhide_element(1, 'playerTable_simple');
+                
+
+            }
+            populateTable_simple();
+            document.getElementById('deadInq').textContent = getInquiry(); 
+            document.getElementById('liveInq').textContent = getInquiryLiveText(); 
+        }
+
+
         function GoBackHome(){
             document.getElementById("GodPage").classList.add("hidden");
             document.getElementById("stage1").classList.remove("hidden");
@@ -1938,7 +2364,7 @@
 
         let rolePool = [];
 
-        function assignRoles() {
+        function assignRoles(preassigned = false) {
             updateCounts();
             rolePool = [];
             document.querySelectorAll("#citizen-roles .role-item select").forEach(select => {
@@ -2007,9 +2433,13 @@
             }
 
 
-            shuffle(rolePool);
+            
             document.getElementById("stage1").classList.add("hidden");
+            if (preassigned){
+                document.getElementById("stage2_5").classList.remove("hidden");
+            } else {
             document.getElementById("stage2").classList.remove("hidden");
+            }
         }
                     
         function goBack() {
@@ -2438,6 +2868,8 @@ function fixText(text) {
                 
                 return;
             }
+            shuffle(rolePool);
+
             do {
                 cur_player_name = prompt("نام بازیکن را وارد کنید");
             }
@@ -2453,6 +2885,36 @@ function fixText(text) {
             document.getElementById("assign-role-btn").innerText = "متوجه شدم!";
             document.getElementById("assign-role-btn").onclick = clearRole;
         }
+
+
+        function getRole_preassigned() {
+            if (rolePool.length === 0) {
+                alert("همه نقش‌ها اختصاص داده شده‌اند");
+                
+                return;
+            }
+            const role = rolePool.splice(0, 1)[0];
+            do {
+                cur_player_name = prompt(`نام بازیکن را برای نقش ${role} وارد کنید`);
+            }
+            while (cur_player_name === null || cur_player_name === "" || player_names.includes(cur_player_name));
+            player_names.push(cur_player_name)
+            sample[cur_player_name] = [role, 1];
+
+            role_side[role] = findKeyByValue(roles, role)
+            document.getElementById("assigned-role").innerText = cur_player_name + "\n\n" + "با نقش " +role + "\n\n" + persian_categories[findKeyByValue(roles, role)];
+            document.getElementById("assign-role-btn").innerText = "متوجه شدم!";
+            document.getElementById("assign-role-btn").onclick = clearRole_preassigned;
+        }
+
+        function clearRole_preassigned() {
+            document.getElementById("assigned-role").innerText = "";
+            document.getElementById("assign-role-btn").innerText = "اختصاص نقش";
+            document.getElementById("assign-role-btn").onclick = getRole_preassigned;
+        }
+
+
+
         
         function clearRole() {
             document.getElementById("assigned-role").innerText = "";
@@ -2462,70 +2924,90 @@ function fixText(text) {
 
 
 
-        function populateTable() {
-    let tbody = document.querySelector("#playerTable tbody");
-    tbody.innerHTML = ""; // Clear table before populating
+    function populateTable() {
+        let tbody = document.querySelector("#playerTable tbody");
+        tbody.innerHTML = ""; // Clear table before populating
 
-    // Get roles from the roles JSON file
-    let mafiaRoles = roles["mafia"];
-    let citizenRoles = roles["citizen"];
-    let independentRoles = roles["independent"];
+        // Get roles from the roles JSON file
+        let mafiaRoles = roles["mafia"];
+        let citizenRoles = roles["citizen"];
+        let independentRoles = roles["independent"];
 
-    // Separate players by role category
-    let mafiaPlayers = [];
-    let independentPlayers = [];
-    let citizenPlayers = [];
+        // Separate players by role category
+        let mafiaPlayers = [];
+        let independentPlayers = [];
+        let citizenPlayers = [];
 
-    Object.entries(sample).forEach(([name, details]) => {
-        let role = details[0];  // Role name
-        let isAlive = details[1] === 1; // Alive status
+        Object.entries(sample).forEach(([name, details]) => {
+            let role = details[0];  // Role name
+            let isAlive = details[1] === 1; // Alive status
 
-        // Determine styling based on role category
-        let textColor, backgroundColor;
-        if (mafiaRoles.includes(role)) {
-            textColor = "white";
-            backgroundColor = "rgb(120, 0, 0)";  // Dark Red
-        } else if (independentRoles.includes(role)) {
-            textColor = "black";
-            backgroundColor = "rgb(216,202,169)";  // Beige
-        } else {
-            textColor = "black";
-            backgroundColor = "rgb(180, 230, 180)";  // Light Green
-        }
+            // Determine styling based on role category
+            let textColor, backgroundColor;
+            if (mafiaRoles.includes(role)) {
+                textColor = "white";
+                backgroundColor = "rgb(120, 0, 0)";  // Dark Red
+            } else if (independentRoles.includes(role)) {
+                textColor = "black";
+                backgroundColor = "rgb(216,202,169)";  // Beige
+            } else {
+                textColor = "black";
+                backgroundColor = "rgb(180, 230, 180)";  // Light Green
+            }
 
-        // Swap "نام" (Name) and "وضعیت" (Status) (First and Last Columns)
-        let rowHTML = `
-            <tr style="color: ${textColor}; background-color: ${backgroundColor};">
-                <td>${role}</td>  <!-- Role (Middle Column, unchanged) -->
-                <td>${name}</td>  <!-- Name (First Column, swapped) -->
-                <td class="${isAlive ? "alive" : "dead"}">${isAlive ? "✅" : "❌"}</td>  <!-- Status (Last Column, swapped) -->
-            </tr>
-        `;
+            // Swap "نام" (Name) and "وضعیت" (Status) (First and Last Columns)
+            let rowHTML = `
+                <tr style="color: ${textColor}; background-color: ${backgroundColor};">
+                    <td>${role}</td>  <!-- Role (Middle Column, unchanged) -->
+                    <td>${name}</td>  <!-- Name (First Column, swapped) -->
+                    <td class="${isAlive ? "alive" : "dead"}">${isAlive ? "✅" : "❌"}</td>  <!-- Status (Last Column, swapped) -->
+                </tr>
+            `;
 
-        // Push players into respective category lists
-        if (mafiaRoles.includes(role)) {
-            mafiaPlayers.push(rowHTML);
-        } else if (independentRoles.includes(role)) {
-            independentPlayers.push(rowHTML);
-        } else {
-            citizenPlayers.push(rowHTML);
-        }
-    });
+            // Push players into respective category lists
+            if (mafiaRoles.includes(role)) {
+                mafiaPlayers.push(rowHTML);
+            } else if (independentRoles.includes(role)) {
+                independentPlayers.push(rowHTML);
+            } else {
+                citizenPlayers.push(rowHTML);
+            }
+        });
 
-    // Append Mafia first, then Independent, then Citizens
-    tbody.innerHTML = mafiaPlayers.join("") + independentPlayers.join("") + citizenPlayers.join("");
-    document.querySelectorAll("#playerTable thead th").forEach(th => th.style.color = "black");
-}
+        // Append Mafia first, then Independent, then Citizens
+        tbody.innerHTML = mafiaPlayers.join("") + independentPlayers.join("") + citizenPlayers.join("");
+        document.querySelectorAll("#playerTable thead th").forEach(th => th.style.color = "black");
+    }
 
 
 function populateGameInfoTable() {
     let infoTable = document.querySelector("#gameInfoTable tbody");
     infoTable.innerHTML = ""; // Clear table before populating
 
+    // let persianLabels = [
+    //     "انتخاب وارث", "انتخاب عطار", "تعداد نجات دکتر روی خودش", "تغییر نقش وارث", 
+    //     "اطلاع رسانی به وارث", "تعداد استعلام باقی مانده", "نقش جدید وارث", "پادزهر تیم مافیا", "روز تفنگ کاپو", "بازی در جریان"
+    // ];
     let persianLabels = [
-        "انتخاب وارث", "انتخاب عطار", "تعداد نجات دکتر روی خودش", "تغییر نقش وارث", 
-        "اطلاع رسانی به وارث", "تعداد استعلام باقی مانده", "پادزهر تیم مافیا", "روز تفنگ کاپو", "بازی در جریان"
-    ];
+    "انتخاب وارث",
+    "انتخاب عطار",
+    "تعداد نجای دکتر روی خودش",
+    "تغییر نقش وارث",
+    "اطلاع رسانی به وارث",
+    "نقش جدید وارث",
+    "تعداد استعلام باقی مانده",
+    "پادزهر تیم مافیا",
+    "روز تفنگ کاپو",
+    "بازی در جریان"
+    ]
+
+
+
+
+
+
+
+
 
     let keys = Object.keys(game_info);
     
@@ -2691,7 +3173,7 @@ audioPlayer.addEventListener("ended", () => {
 
 
 
-
+        window.onload = populateTable_simple;
 
 
 
@@ -2711,6 +3193,7 @@ audioPlayer.addEventListener("ended", () => {
                     }
                     target[key] = value;
                     populateTable(); // Auto-update table when data changes
+                    populateTable_simple();
                     return true;
                 }
             });
@@ -2723,12 +3206,15 @@ audioPlayer.addEventListener("ended", () => {
                 }
             });
             populateGameInfoTable();
+            populateTable_simple();
             populateTable();
             populateRoles();
             updateCounts();
             populateRoles();
             updateCounts();
         });
+
+
         </script>
 </body>
 </html>
