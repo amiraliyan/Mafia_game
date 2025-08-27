@@ -2873,17 +2873,32 @@ function fixText(text) {
                 
                 return;
             }
-            shuffle(rolePool);
+
+            const now = new Date();
+
+            // Extract the current second (0-59)
+            const currentSecond = now.getSeconds();
+            
+           
+            // Loop from 0 up to (but not including) the current second
+            for (let i = 1; i <= currentSecond + 1; i++) {
+              shuffle(rolePool);;
+            }
+            
+
+
+
+
+            const randomIndex = Math.floor(Math.random() * rolePool.length);
+            const role = rolePool.splice(randomIndex, 1)[0];
+
 
             do {
                 cur_player_name = prompt("نام بازیکن را وارد کنید");
             }
             while (cur_player_name === null || cur_player_name === "" || player_names.includes(cur_player_name));
             player_names.push(cur_player_name)
-
-
-            const randomIndex = Math.floor(Math.random() * rolePool.length);
-            const role = rolePool.splice(randomIndex, 1)[0];
+        
             sample[cur_player_name] = [role, 1];
             role_side[role] = findKeyByValue(roles, role)
             document.getElementById("assigned-role").innerText = cur_player_name + "\n\n" + "با نقش " +role + "\n\n" + persian_categories[findKeyByValue(roles, role)];
