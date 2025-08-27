@@ -322,7 +322,7 @@
 
         <button style="margin-top: 15px;" onclick="assignRoles(preassigned = true)">اختصاص نقش از پیش تعیین شده</button>
         <button style="margin-top: 15px;" onclick="assignRoles()">اختصاص نقش</button>
-        <button style="margin-top: 15px;" onclick="resetRoles()">ریست</button>
+        <!-- <button style="margin-top: 15px;" onclick="resetRoles()">ریست</button> -->
         <button style="margin-top: 15px;" onclick="restoreGame()">بازنشانی آخرین بازی</button>
         <button style="margin-top: 15px;" onclick="clearBackup()">پاک کردن آخرین بازی</button>
     </div>
@@ -350,8 +350,8 @@
 
 
         <!-- <button style="position: absolute; bottom: 100px; left: 10px; width: 30%; text-align: center; display: flex; align-items: center; justify-content: center;" onclick="downloadPDF()">دانلود</button> -->
-        <button style="position: absolute; bottom: 130px; left: 30%; transform: translateX(-50%); width: 40%;" onclick="godPage()">صفحه گرداننده کاپو</button>
-        <button style="position: absolute; bottom: 130px; left: 70%; transform: translateX(-50%); width: 40%;" onclick="godPage_simple()">صفحه گرداننده ساده</button>
+        <!-- <button style="position: absolute; bottom: 130px; left: 30%; transform: translateX(-50%); width: 40%;" onclick="godPage()">صفحه گرداننده کاپو</button> -->
+        <button style="position: absolute; bottom: 130px; left: 70%; transform: translateX(-100%); width: 40%;" onclick="godPage_simple()">صفحه گرداننده</button>
 
     </div>
 
@@ -373,8 +373,8 @@
 
 
         <!-- <button style="position: absolute; bottom: 100px; left: 10px; width: 30%; text-align: center; display: flex; align-items: center; justify-content: center;" onclick="downloadPDF()">دانلود</button> -->
-        <button style="position: absolute; bottom: 130px; left: 30%; transform: translateX(-50%); width: 40%;" onclick="godPage()">صفحه گرداننده کاپو</button>
-        <button style="position: absolute; bottom: 130px; left: 70%; transform: translateX(-50%); width: 40%;" onclick="godPage_simple()">صفحه گرداننده ساده</button>
+        <!-- <button style="position: absolute; bottom: 130px; left: 30%; transform: translateX(-50%); width: 40%;" onclick="godPage()">صفحه گرداننده کاپو</button> -->
+        <button style="position: absolute; bottom: 130px; left: 70%; transform: translateX(-50%); width: 40%;" onclick="godPage_simple()">صفحه گرداننده</button>
 
     </div>
     
@@ -414,7 +414,7 @@
                  <input type="number" id="time3" value="45">
                  <button onclick="startTimer('time3')">تایمر نوبت صحبت</button>
              </div>
-             <div class="input-group">
+             <!-- <div class="input-group">
                  <input type="number" id="time4" value="40">
                  <button onclick="startTimer('time4')">تایمر درباره</button>
              </div>
@@ -433,7 +433,7 @@
              <div class="input-group">
                  <input type="number" id="time8" value="40">
                  <button onclick="startTimer('time8')">تایمر وصیت</button>
-             </div>
+             </div> -->
              <div class="input-group">
                  <input type="number" id="time9" value="120">
                  <button onclick="startTimer('time9')">تایمر کیاس</button>
@@ -444,11 +444,11 @@
              </div>
              
              <div class="button-group">
-                 <button class="stop-button" onclick="stopAlarm()">استاپ</button>
+                 <!-- <button class="stop-button" onclick="stopAlarm()">استاپ</button> -->
                  <button class="stop-button" onclick="restartTimer()">ریست</button>
-                 <button class="stop-button" onclick="document.getElementById('alarmSound').play()">فعال سازی صدا</button>
+                 <!-- <button class="stop-button" onclick="document.getElementById('alarmSound').play()">فعال سازی صدا</button> -->
                  <button class="stop-button"  onclick="restoreGame_2()">بازنشانی آخرین وضعیت</button>
-                 <button class="stop-button" onclick="changeGodMod()" id="cur_god_mode">تغییر گردانندگی</button>
+                 <!-- <button class="stop-button" onclick="changeGodMod()" id="cur_god_mode">تغییر گردانندگی</button> -->
              </div>
              
          </div>
@@ -2242,6 +2242,8 @@
             if (rolePool.length >0){
                 alert("نقش دهی کامل نشده")
             } else {
+                document.getElementById('alarmSound').play();
+                stopAlarm();
                 backupGame();
                 downloadPDF();
                 document.getElementById("stage2").classList.add("hidden");
@@ -3089,11 +3091,35 @@ const songs = [
     { name: "ستار، گل پری", file: "03 Golpari.mp3" },
     { name: "شهرام شب پره، گلاب", file: "Shahram Shabpareh - Golab (Official Video).mp3" },
     { name: "شهرام و ناهید، دلکم دلبرکم", file: "Nahid - Delakam [320].mp3" },
-    
-    { name: "همایون، چه دانستم", file: "Homayoun Shajaryan - Arayeshe Ghaliz 2 (320).mp3" },
+    { name: "معین، دلشکسته", file: "Moein Delshekasteh-f077.mp3" },
+    { name: "مارتیک، با نگات قهرم", file: "Negam Nakon Ba Negat Ghahrm (320).mp3" },
+    { name: "بلک کتز، ای یار ای یار", file: "Ei Yar Black Cats.mp3" },
+    // { name: "همایون، چه دانستم", file: "Homayoun Shajaryan - Arayeshe Ghaliz 2 (320).mp3" },
     // { name: "SQUID GAME_ Pink Soldiers", file: "SQUID GAME_ Pink Soldiers (Samuel Kim Remix)  EPIC VERSION.mp3" },
-    { name: "Sting - Shape of my Heart", file: "Sting - Shape of my Heart (LCAW Remix).mp3" },
-    { name: "The Godfather Theme Song", file: "The Godfather Theme Song (LBLVNC Trap Mix).mp3" }, 
+
+
+
+    { name: "مرتضی لطفی، تو بهترین", file: "To Behtarin Morteza Lotfi.mp3" }, 
+    { name: "فرزاد فرزین، دنیای ما", file: "Donyaye Ma Farzad Farzin.mp3" },
+    { name: "سیروان خسروی، تنها نذار", file: "Tahna Nazar Sirvan Khosravi.mp3" },
+    { name: "یاس و نیما، سخته", file: "Yas Fead Nima.mp3" },
+    { name: "بلک کتز، حرم سرا", file: "Yazd Black Cats.mp3" },
+
+    { name: "مازیار فلاحی، دل تنها", file: "maziyar_fallahi_dele_tanha.mp3" },
+    { name: "نوان، مسکن", file: "Novan - Mosaken (320).mp3" },
+
+
+
+
+    { name: "فرزاد فرزین، روزای تاریک", file: "Farzad Farzin - Rozaye Tarik (320).mp3" },
+    { name: "حامیم، قلب منی", file: "Haamim - Ghalbe Mani.mp3" },
+    { name: "حسین، خیابون", file: "Ho3ein - Khiyaboon (Ft BigRez & Daniall) [www.Ahangimo.com].mp3" },
+    { name: "مهدی آذر، هنوز به یادت", file: "Mehdi Azar - Hanooz Be Yadete.mp3" },
+
+
+
+
+
     { name: "Elissa, Baddy Doub", file: "01. Baddy Doub.mp3" }, 
     { name: "Elissa, Da Lolak", file: "02. Da Lolak.mp3" }, 
     { name: "Elissa, Hilm Al Ahlam", file: "03. Hilm Al Ahlam.mp3" }, 
@@ -3102,19 +3128,36 @@ const songs = [
     { name: "Elissa, Zaalan", file: "07. Zaalan.mp3" }, 
     { name: "Haifa, Enta Tany", file: "enta_tany_haifaa_wahby.mp3" }, 
     { name: "Simge, Yanki", file: "Simge-Yanki.mp3" }, 
+
+
+
+
+    { name: "Wild Apple, 9 Pm 'Till I Come", file: "01 9 Pm 'Till I Come.mp3" },
+    { name: "Wild Apple, Overwhelm Yourself", file: "02 Overwhelm Yourself.mp3" },
+    { name: "Wild Apple, All Night Passion", file: "03 All Night Passion.mp3" },
+    { name: "Wild Apple, Watch Out", file: "04 Watch Out.mp3" },
+    { name: "Wild Apple, Heatwave", file: "05 Heatwave.mp3" },
+    { name: "Wild Apple, Pipeline", file: "06 Pipeline.mp3" },
+    { name: "Wild Apple, The Flight", file: "07 The Flight.mp3" },
+    { name: "Wild Apple, Backfired 2000", file: "08 Backfired 2000.mp3" },
+    { name: "Wild Apple, Hawkeye", file: "09 Hawkeye.mp3" },
+    { name: "Wild Apple, For An Angel", file: "10 For An Angel.mp3" },
+    { name: "Wild Apple, New Romantic", file: "11 New Romantic.mp3" },
+    { name: "Wild Apple, Dreaming", file: "12 Dreaming.mp3" },
+    { name: "Wild Apple, We Are", file: "13 We Are.mp3" },
+    { name: "Wild Apple, Dont Stop", file: "14 Dont Stop.mp3" },
+    { name: "Wild Apple, Angelfalls", file: "15 Angelfalls.mp3" },
+    { name: "Wild Apple, Intencity", file: "16 Intencity.mp3" },
+    { name: "Wild Apple, Aurora", file: "17 Aurora.mp3" },
+    { name: "Wild Apple, Beautiful Worlds", file: "18 Beautiful Worlds.mp3" },
+    { name: "Wild Apple, Dreamscape", file: "19 Dreamscape.mp3" },
+    { name: "Wild Apple, Trilogie Part Two", file: "20 Trilogie Part Two.mp3" },
+    // { name: "حسین علیزاده، رقص سماع", file: "05_Raghse.Soomae.mp3" }
+
     { name: "آذری، بی کلام", file: "Azari Bi Kalam.mp3" }, 
     { name: "ترکی، بی کلام", file: "Torky Bi Kalam.mp3" }, 
-    { name: "مرتضی لطفی، تو بهترین", file: "To Behtarin Morteza Lotfi.mp3" }, 
-    
-    { name: "فرزاد فرزین، دنیای ما", file: "Donyaye Ma Farzad Farzin.mp3" },
-    { name: "سیروان خسروی، تنها نذار", file: "Tahna Nazar Sirvan Khosravi.mp3" },
-    { name: "یاس و نیما، سخته", file: "Yas Fead Nima.mp3" },
-   
-    { name: "بلک کتز، حرم سرا", file: "Yazd Black Cats.mp3" },
-    { name: "بلک کتز، ای یار ای یار", file: "Ei Yar Black Cats.mp3" },
-    { name: "مازیار فلاحی، دل تنها", file: "maziyar_fallahi_dele_tanha.mp3" },
-    { name: "حسین علیزاده، رقص سماع", file: "05_Raghse.Soomae.mp3" }
-    
+    { name: "Sting - Shape of my Heart", file: "Sting - Shape of my Heart (LCAW Remix).mp3" },
+    { name: "The Godfather Theme Song", file: "The Godfather Theme Song (LBLVNC Trap Mix).mp3" }
 
 
 
