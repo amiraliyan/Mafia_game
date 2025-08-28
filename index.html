@@ -767,7 +767,9 @@
                 citizenPlayers.push(rowHTML);
                 }
             });
-
+        mafiaPlayers.sort();
+        independentPlayers.sort();
+        citizenPlayers.sort();
         tbody.innerHTML = mafiaPlayers.join("") + independentPlayers.join("") + citizenPlayers.join("");
         }
 
