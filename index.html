@@ -2898,7 +2898,7 @@ function fixText(text) {
 
 
             do {
-                cur_player_name = prompt("نام بازیکن را وارد کنید");
+                cur_player_name = prompt("نام بازیکن را وارد کنید".concat("\n").concat("نقش انتخاب شده:").concat(role));
             }
             while (cur_player_name === null || cur_player_name === "" || player_names.includes(cur_player_name));
             player_names.push(cur_player_name)
