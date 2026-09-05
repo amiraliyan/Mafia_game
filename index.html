@@ -2488,8 +2488,8 @@ function downloadShuffledNames() {
         }
     }
 
-    let body = shuffledNames.map((name, index) => [index + 1, fixText(name)]);
-
+    // let body = shuffledNames.map((name, index) => [index + 1, fixText(name)]);
+    let body = shuffledNames.map((name, index) => [fixText(name), index + 1]);   
     let headers = [["ردیف", "نام"]].map(row => row.reverse());
 
     doc.autoTable({
@@ -2506,8 +2506,8 @@ function downloadShuffledNames() {
             lineColor: [0, 0, 0],
         },
         columnStyles: {
-            0: { cellWidth: "auto", halign: "right" },
-            1: { cellWidth: "auto", halign: "right" },
+            0: { cellWidth: "90%", halign: "right" },
+            1: { cellWidth: "10", halign: "right" },
         },
         didParseCell: function (data) {
             if (data.section === "head") {
